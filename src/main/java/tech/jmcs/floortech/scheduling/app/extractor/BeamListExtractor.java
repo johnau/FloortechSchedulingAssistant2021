@@ -3,7 +3,10 @@ package tech.jmcs.floortech.scheduling.app.extractor;
 import org.apache.poi.ss.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tech.jmcs.floortech.scheduling.app.util.XLSUtility;
+import tech.jmcs.floortech.scheduling.app.extractor.exception.BeamListDataException;
+import tech.jmcs.floortech.scheduling.app.extractor.exception.DataExtractorException;
+import tech.jmcs.floortech.scheduling.app.extractor.model.BeamData;
+import tech.jmcs.floortech.scheduling.app.extractor.model.ExtractedTableData;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -89,7 +92,7 @@ public class BeamListExtractor extends ExcelDataSourceExtractor<BeamData> {
             return;
         }
 
-        ExtractedDataObject<BeamData> data = new ExtractedDataObject(DataSourceName.BEAM_LISTING.toString());
+        ExtractedTableData<BeamData> data = new ExtractedTableData(DataSourceName.BEAM_LISTING.toString());
 
         Sheet sheet = this.xls.getSheetByNumber(0);
 
@@ -163,7 +166,7 @@ public class BeamListExtractor extends ExcelDataSourceExtractor<BeamData> {
     }
 
     @Override
-    public ExtractedDataObject<BeamData> getDataAndFinish() {
+    public ExtractedTableData<BeamData> getDataAndFinish() {
         this.closeFile();
         return dataObject;
     }

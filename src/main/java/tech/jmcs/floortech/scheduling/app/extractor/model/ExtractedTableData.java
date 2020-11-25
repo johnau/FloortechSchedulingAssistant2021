@@ -1,14 +1,14 @@
-package tech.jmcs.floortech.scheduling.app.extractor;
+package tech.jmcs.floortech.scheduling.app.extractor.model;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class ExtractedDataObject<T> {
+public class ExtractedTableData<T> {
 
     private String name;
     private Map<Long, T> data;
 
-    public ExtractedDataObject(String name) {
+    public ExtractedTableData(String name) {
         this.name = name;
         this.data = new HashMap<>();
     }

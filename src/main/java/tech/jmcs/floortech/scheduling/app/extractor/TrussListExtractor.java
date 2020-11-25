@@ -4,6 +4,9 @@ import org.apache.poi.ss.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.jmcs.floortech.scheduling.app.EndCapCW260;
+import tech.jmcs.floortech.scheduling.app.extractor.exception.DataExtractorException;
+import tech.jmcs.floortech.scheduling.app.extractor.model.ExtractedTableData;
+import tech.jmcs.floortech.scheduling.app.extractor.model.TrussData;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -120,7 +123,7 @@ public class TrussListExtractor extends ExcelDataSourceExtractor<TrussData> {
             return;
         }
 
-        ExtractedDataObject<TrussData> data = new ExtractedDataObject(DataSourceName.BEAM_LISTING.toString());
+        ExtractedTableData<TrussData> data = new ExtractedTableData(DataSourceName.BEAM_LISTING.toString());
 
         Sheet sheet = this.xls.getSheetByNumber(0);
         int c = -1;
@@ -154,7 +157,7 @@ public class TrussListExtractor extends ExcelDataSourceExtractor<TrussData> {
     }
 
     @Override
-    public ExtractedDataObject<TrussData> getDataAndFinish() {
+    public ExtractedTableData<TrussData> getDataAndFinish() {
         this.closeFile();
         return this.dataObject;
     }

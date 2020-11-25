@@ -1,6 +1,9 @@
 package tech.jmcs.floortech.scheduling.app.extractor;
 
 import org.junit.jupiter.api.Test;
+import tech.jmcs.floortech.scheduling.app.extractor.exception.DataExtractorException;
+import tech.jmcs.floortech.scheduling.app.extractor.model.BeamData;
+import tech.jmcs.floortech.scheduling.app.extractor.model.ExtractedTableData;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -41,7 +44,7 @@ class BeamListExtractorTest {
             System.out.printf("Data Extractor Exception thrown: [%s] %s \n",  e.getDataSourceName(), e.getMessage());
         }
 
-        ExtractedDataObject<BeamData> data = extractor.getDataAndFinish();
+        ExtractedTableData<BeamData> data = extractor.getDataAndFinish();
         if (data == null) {
             System.out.println("Extraction was not be completed");
             return;

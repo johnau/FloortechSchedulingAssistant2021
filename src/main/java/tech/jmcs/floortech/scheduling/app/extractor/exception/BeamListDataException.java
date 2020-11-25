@@ -1,6 +1,4 @@
-package tech.jmcs.floortech.scheduling.app.extractor;
-
-import tech.jmcs.floortech.scheduling.app.extractor.DataExtractorException;
+package tech.jmcs.floortech.scheduling.app.extractor.exception;
 
 public class BeamListDataException extends DataExtractorException {
 

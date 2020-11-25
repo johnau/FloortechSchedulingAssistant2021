@@ -1,4 +1,4 @@
-package tech.jmcs.floortech.scheduling.app.extractor;
+package tech.jmcs.floortech.scheduling.app.extractor.model;
 
 import tech.jmcs.floortech.scheduling.app.EndCapCW260;
 

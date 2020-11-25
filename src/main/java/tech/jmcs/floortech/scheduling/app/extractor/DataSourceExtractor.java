@@ -1,5 +1,8 @@
 package tech.jmcs.floortech.scheduling.app.extractor;
 
+import tech.jmcs.floortech.scheduling.app.extractor.exception.DataExtractorException;
+import tech.jmcs.floortech.scheduling.app.extractor.model.ExtractedTableData;
+
 /**
  * Interface for Data Source Extractor
  */
@@ -20,6 +23,6 @@ public interface DataSourceExtractor<T> {
      * Method to get the Data and close files / free memory
      * @return
      */
-    public ExtractedDataObject<T> getDataAndFinish();
+    public ExtractedTableData<T> getDataAndFinish();
 
 }

@@ -1,6 +1,9 @@
 package tech.jmcs.floortech.scheduling.app.extractor;
 
 import org.junit.jupiter.api.Test;
+import tech.jmcs.floortech.scheduling.app.extractor.exception.DataExtractorException;
+import tech.jmcs.floortech.scheduling.app.extractor.model.ExtractedTableData;
+import tech.jmcs.floortech.scheduling.app.extractor.model.TrussData;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -43,7 +46,7 @@ class TrussListExtractorTest {
             return;
         }
 
-        ExtractedDataObject<TrussData> data = extractor.getDataAndFinish();
+        ExtractedTableData<TrussData> data = extractor.getDataAndFinish();
         Map<Long, TrussData> dataMap = data.getData();
         dataMap.forEach((id, td) -> {
             String trussId = td.getTrussId();
