@@ -1,4 +1,4 @@
-package tech.jmcs.floortech.scheduling.app.extractor;
+package tech.jmcs.floortech.scheduling.app;
 
 public enum BalconyType {
 

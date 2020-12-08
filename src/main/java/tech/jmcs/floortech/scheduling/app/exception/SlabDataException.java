@@ -1,4 +1,4 @@
-package tech.jmcs.floortech.scheduling.app.extractor.exception;
+package tech.jmcs.floortech.scheduling.app.exception;
 
 public class SlabDataException extends DataExtractorException {
     public SlabDataException(String message) {

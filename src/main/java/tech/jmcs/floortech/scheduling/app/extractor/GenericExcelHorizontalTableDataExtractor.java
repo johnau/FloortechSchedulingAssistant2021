@@ -3,11 +3,12 @@ package tech.jmcs.floortech.scheduling.app.extractor;
 import org.apache.poi.ss.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tech.jmcs.floortech.scheduling.app.extractor.exception.DataExtractorException;
-import tech.jmcs.floortech.scheduling.app.extractor.exception.GenericExcelDataException;
+import tech.jmcs.floortech.scheduling.app.exception.DataExtractorException;
+import tech.jmcs.floortech.scheduling.app.exception.GenericExcelDataException;
 import tech.jmcs.floortech.scheduling.app.extractor.model.ExtractedTableData;
 import tech.jmcs.floortech.scheduling.app.util.ExcelCellAddress;
 import tech.jmcs.floortech.scheduling.app.util.ExcelHelper;
+import tech.jmcs.floortech.scheduling.app.util.XLSHelper;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -45,6 +46,7 @@ public class GenericExcelHorizontalTableDataExtractor extends ExcelDataSourceExt
     private final ArrayList<Function<Row, String>> recordValidationFunctions;
 
     /**
+     * Constructor
      * Sheet Numbers start at 0
      * @param excelFile
      * @param tableLayout
@@ -55,14 +57,27 @@ public class GenericExcelHorizontalTableDataExtractor extends ExcelDataSourceExt
     protected GenericExcelHorizontalTableDataExtractor(Path excelFile, Map<ExcelCellAddress, String> tableLayout, Map<Integer, String> columnMap, List<Integer> validRowDataList, Integer sheetNumber) throws IOException {
         super(excelFile);
 
+        this.setTargetSheetNumber(sheetNumber);
+
         this.tableLayout = tableLayout;
         this.columnMap = columnMap;
         this.sheetNumber = sheetNumber;
         this.validRowDataList = validRowDataList;
         this.tableValidationFunctions = new ArrayList<>();
         this.recordValidationFunctions = new ArrayList<>();
+
+
     }
 
+    /**
+     * Overload Constructor
+     * Sheet Numbers start at 0
+     * @param excelFile
+     * @param tableLayout
+     * @param columnMap
+     * @param validRowDataList
+     * @throws IOException
+     */
     protected GenericExcelHorizontalTableDataExtractor(Path excelFile, Map<ExcelCellAddress, String> tableLayout, Map<Integer, String> columnMap, List<Integer> validRowDataList) throws IOException {
         this(excelFile, tableLayout, columnMap, validRowDataList, 0);
     }
@@ -77,7 +92,7 @@ public class GenericExcelHorizontalTableDataExtractor extends ExcelDataSourceExt
 
     @Override
     public Boolean isValid() {
-        Sheet sheet = this.xls.getSheetByNumber(this.sheetNumber);
+        Sheet sheet = this.getTargetSheet();
         DataFormatter dataFormatter = new DataFormatter();
 
         List<String> errors = new ArrayList<>();
@@ -91,7 +106,10 @@ public class GenericExcelHorizontalTableDataExtractor extends ExcelDataSourceExt
             }
 
             Row row = sheet.getRow(cellAddress.getRow());
-            Cell cell = row.getCell(cellAddress.getCol());
+            Cell cell = XLSHelper.getCellByColumnIndex(row, cellAddress.getCol());
+            if (cell == null) {
+                LOG.debug("Validation may fail, cell was null for col: {}", cellAddress.getCol());
+            }
             String cellValue = dataFormatter.formatCellValue(cell);
 
             // direct comparison and skip to next
@@ -140,12 +158,7 @@ public class GenericExcelHorizontalTableDataExtractor extends ExcelDataSourceExt
             return;
         }
 
-        if (!this.xls.isOpen()) {
-            // log
-            return;
-        }
-
-        Sheet sheet = this.xls.getSheetByNumber(this.sheetNumber);
+        Sheet sheet = this.getTargetSheet();
         if (sheet == null) {
             LOG.debug("Sheet did not exist");
             throw new GenericExcelDataException("The requested sheet did not exist");
@@ -236,7 +249,12 @@ public class GenericExcelHorizontalTableDataExtractor extends ExcelDataSourceExt
     }
 
     private boolean rowDataOk(Row row, Map<String, Object> rowData) {
-        // check columns match in count - removed because not all columns need to be filled
+        /** Removed below code
+         * Check columns match in count - removed because not all columns need to be filled, and
+         * extra columns in a table is not a problem as long as expected columns are in expected
+         * locations.
+         * TODO: Notify user if there are extra columns in the table.  User may not know extra data being ignored.
+          */
 //        if (rowData.size() != this.columnMap.size()) {
 //            LOG.debug("Row data size did not match column number size");
 //            return false;
@@ -313,12 +331,12 @@ public class GenericExcelHorizontalTableDataExtractor extends ExcelDataSourceExt
     }
 
     @Override
-    public ExtractedTableData<Map<String, Object>> getDataAndFinish() {
-        try {
-            this.xls.closeFile();
-        } catch (IOException e) {
-            LOG.debug("Error closing excel file: {}", e.getMessage());
-        }
+    public ExtractedTableData<Map<String, Object>> getData() {
+//        try {
+//            this.closeFile();
+//        } catch (Exception e) {
+//
+//        }
         return this.dataObject;
     }
 

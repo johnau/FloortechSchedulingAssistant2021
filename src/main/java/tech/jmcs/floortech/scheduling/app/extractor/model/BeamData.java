@@ -1,5 +1,7 @@
 package tech.jmcs.floortech.scheduling.app.extractor.model;
 
+import tech.jmcs.floortech.scheduling.app.BeamTreatment;
+
 /**
  * Data object for storing values from Beam Listing
  * ** Note on adding fields:
@@ -14,6 +16,8 @@ public class BeamData {
     private String beamId = "NA";
 
     private Long length = 0l;
+
+    private BeamTreatment treatment = BeamTreatment.BLACK;
 
     public BeamData() {
     }
@@ -53,5 +57,13 @@ public class BeamData {
 
     public void setLength(Long length) {
         this.length = length;
+    }
+
+    public BeamTreatment getTreatment() {
+        return treatment;
+    }
+
+    public void setTreatment(BeamTreatment treatment) {
+        this.treatment = treatment;
     }
 }

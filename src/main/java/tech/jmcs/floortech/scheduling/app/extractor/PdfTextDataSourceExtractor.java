@@ -5,7 +5,7 @@ import tech.jmcs.floortech.scheduling.app.util.PDFUtilities;
 import java.io.IOException;
 import java.nio.file.Path;
 
-public abstract class PdfTextDataSourceExtractor<T> extends FileDataSourceExtractorBase<T> {
+public abstract class PdfTextDataSourceExtractor<T> extends FileDataSourceExtractor<T> {
 
     protected final String pdfText;
 

@@ -1,7 +1,7 @@
 package tech.jmcs.floortech.scheduling.app.extractor;
 
 import org.junit.jupiter.api.Test;
-import tech.jmcs.floortech.scheduling.app.extractor.exception.DataExtractorException;
+import tech.jmcs.floortech.scheduling.app.exception.DataExtractorException;
 import tech.jmcs.floortech.scheduling.app.extractor.model.BeamData;
 import tech.jmcs.floortech.scheduling.app.extractor.model.ExtractedTableData;
 
@@ -25,8 +25,6 @@ class BeamListExtractorTest {
 
         Boolean valid = extractor.isValid();
         System.out.printf("File is valid: %s \n", valid.toString());
-
-        extractor.closeFile();
     }
 
     @Test
@@ -44,7 +42,7 @@ class BeamListExtractorTest {
             System.out.printf("Data Extractor Exception thrown: [%s] %s \n",  e.getDataSourceName(), e.getMessage());
         }
 
-        ExtractedTableData<BeamData> data = extractor.getDataAndFinish();
+        ExtractedTableData<BeamData> data = extractor.getData();
         if (data == null) {
             System.out.println("Extraction was not be completed");
             return;

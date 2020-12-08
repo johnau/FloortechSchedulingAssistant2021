@@ -2,16 +2,15 @@ package tech.jmcs.floortech.scheduling.app.extractor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tech.jmcs.floortech.scheduling.app.extractor.exception.DataExtractorException;
-import tech.jmcs.floortech.scheduling.app.extractor.exception.SlabDataException;
+import tech.jmcs.floortech.scheduling.app.BalconyType;
+import tech.jmcs.floortech.scheduling.app.exception.DataExtractorException;
+import tech.jmcs.floortech.scheduling.app.exception.SlabDataException;
 import tech.jmcs.floortech.scheduling.app.extractor.model.ExtractedTableData;
 import tech.jmcs.floortech.scheduling.app.extractor.model.SlabData;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -169,7 +168,7 @@ public class SlabListExtractor extends PdfTextDataSourceExtractor<SlabData> {
     }
 
     @Override
-    public ExtractedTableData<SlabData> getDataAndFinish() {
+    public ExtractedTableData<SlabData> getData() {
 
         return this.dataObject;
     }

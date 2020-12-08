@@ -5,9 +5,10 @@ import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.junit.jupiter.api.Test;
-import tech.jmcs.floortech.scheduling.app.extractor.exception.DataExtractorException;
+import tech.jmcs.floortech.scheduling.app.exception.DataExtractorException;
 import tech.jmcs.floortech.scheduling.app.extractor.model.ExtractedTableData;
 import tech.jmcs.floortech.scheduling.app.util.ExcelCellAddress;
+import tech.jmcs.floortech.scheduling.app.util.XLSHelper;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -46,8 +47,6 @@ class GenericExcelHorizontalTableDataExtractorTest {
 
         Boolean isValid = extractor.isValid();
         System.out.printf("Generic table is valid: %s", isValid);
-
-        extractor.closeFile();
     }
 
     /**
@@ -164,7 +163,11 @@ class GenericExcelHorizontalTableDataExtractorTest {
                     continue;
                 }
 
-                Cell cellA = row.getCell(0);
+                Cell cellA = XLSHelper.getCellByColumnIndex(row, 0);
+                if (cellA == null) {
+                    // skip empty
+                    continue;
+                }
 
                 if (cellA.getCellType().equals(CellType.STRING)) {
                     String valA = cellA.getStringCellValue();
@@ -286,7 +289,8 @@ class GenericExcelHorizontalTableDataExtractorTest {
 
         List<Function<Row, String>> recordValidationFunctions = new ArrayList();
         Function<Row, String> recordValidator = (row) -> {
-            Cell idCell = row.getCell(1);
+            Cell idCell = XLSHelper.getCellByColumnIndex(row, 1);
+            if (idCell == null) return "The ID Cell did not exist";
             if (idCell.getCellType().equals(CellType.STRING)) {
                 String cVal = idCell.getStringCellValue().toLowerCase();
                 if (cVal.contains("z")) {
@@ -360,7 +364,7 @@ class GenericExcelHorizontalTableDataExtractorTest {
             System.out.printf("Extraction error: %s \n", e.getMessage());
         }
 
-        ExtractedTableData<Map<String, Object>> tableData = extractor.getDataAndFinish();
+        ExtractedTableData<Map<String, Object>> tableData = extractor.getData();
         if (tableData == null) {
             System.out.println("Table data was null");
             fail();

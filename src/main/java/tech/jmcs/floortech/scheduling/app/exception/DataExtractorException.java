@@ -1,4 +1,4 @@
-package tech.jmcs.floortech.scheduling.app.extractor.exception;
+package tech.jmcs.floortech.scheduling.app.exception;
 
 public class DataExtractorException extends Exception {
     private final String dataSourceName;

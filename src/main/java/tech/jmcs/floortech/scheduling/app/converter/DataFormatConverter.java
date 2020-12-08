@@ -1,0 +1,21 @@
+package tech.jmcs.floortech.scheduling.app.converter;
+
+import tech.jmcs.floortech.scheduling.app.extractor.model.ExtractedTableData;
+
+import java.util.Map;
+
+public abstract class DataFormatConverter<T> {
+
+    protected DataFormatConverter() {
+
+    }
+
+    /**
+     * Convert data from an ExtractedTableData object to a Map of values stored by target cell name.
+     * The Target Cell Name will match a cell in the Scheduling Excel sheet and be used to place the value.
+     * @param d
+     * @return
+     */
+    public abstract Map<String, Object> convert(ExtractedTableData<T> d);
+
+}

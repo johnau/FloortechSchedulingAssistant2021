@@ -3,10 +3,11 @@ package tech.jmcs.floortech.scheduling.app.extractor;
 import org.apache.poi.ss.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tech.jmcs.floortech.scheduling.app.extractor.exception.BeamListDataException;
-import tech.jmcs.floortech.scheduling.app.extractor.exception.DataExtractorException;
+import tech.jmcs.floortech.scheduling.app.exception.BeamListDataException;
+import tech.jmcs.floortech.scheduling.app.exception.DataExtractorException;
 import tech.jmcs.floortech.scheduling.app.extractor.model.BeamData;
 import tech.jmcs.floortech.scheduling.app.extractor.model.ExtractedTableData;
+import tech.jmcs.floortech.scheduling.app.util.XLSHelper;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -31,6 +32,7 @@ public class BeamListExtractor extends ExcelDataSourceExtractor<BeamData> {
     protected static final String COL_C_TITLE = "ID";
     protected static final String COL_D_TITLE = "Length";
 
+    protected static final int ROW_TYPE_UNKNOWN = -1;
     protected static final int ROW_TYPE_BEAM_GROUP = 0;
     protected static final int ROW_TYPE_BEAM_DATA = 1;
     protected static final int ROW_TYPE_BEAM_GROUP_TOTAL = 2;
@@ -38,6 +40,7 @@ public class BeamListExtractor extends ExcelDataSourceExtractor<BeamData> {
 
     protected BeamListExtractor(Path excelFile) throws IOException {
         super(excelFile);
+        this.setTargetSheetNumber(0);
     }
 
     /**
@@ -48,7 +51,7 @@ public class BeamListExtractor extends ExcelDataSourceExtractor<BeamData> {
     public Boolean isValid() {
         // check the beam listing xls layout and cell contents for expected layout
 
-        Sheet firstSheet = xls.getSheetByNumber(0);
+        Sheet firstSheet = this.getTargetSheet();
 
         int c = 0;
         List<String> errors = new ArrayList();
@@ -87,14 +90,9 @@ public class BeamListExtractor extends ExcelDataSourceExtractor<BeamData> {
             return;
         }
 
-        if (!this.xls.isOpen()) {
-            // log
-            return;
-        }
-
         ExtractedTableData<BeamData> data = new ExtractedTableData(DataSourceName.BEAM_LISTING.toString());
 
-        Sheet sheet = this.xls.getSheetByNumber(0);
+        Sheet sheet = this.getTargetSheet();
 
         int c = -1;
         String currentBeamGroup = "";
@@ -103,7 +101,7 @@ public class BeamListExtractor extends ExcelDataSourceExtractor<BeamData> {
         int lastRowNum = sheet.getLastRowNum();
         for (Row row : sheet) {
             c += 1;
-            if (c > 1) { // skip first two rows
+            if (c >= 2) { // skip first two rows (0 & 1)
                 int rowType = getRowType(row, dataFormatter, lastRowNum);
                 BeamData beamData = null;
 
@@ -111,7 +109,14 @@ public class BeamListExtractor extends ExcelDataSourceExtractor<BeamData> {
 
                     /** Set the current beam group name and reset the beam group ids list */
 
-                    Cell cellA = row.getCell(0);
+                    Cell cellA = XLSHelper.getCellByColumnIndex(row, 0);
+                    if (cellA == null) {
+                        LOG.warn("Could not find the Beam Group Name");
+                        currentBeamGroup = "Unknown";
+                        beamsInGroup = new ArrayList();
+                        continue;
+                    }
+
                     String aStrVal = dataFormatter.formatCellValue(cellA);
                     if (!aStrVal.isEmpty()) {
                         currentBeamGroup = aStrVal;
@@ -165,9 +170,12 @@ public class BeamListExtractor extends ExcelDataSourceExtractor<BeamData> {
         this.dataObject = data;
     }
 
+    /**
+     * Get the data that was extracted (and possibly processed)
+     * @return
+     */
     @Override
-    public ExtractedTableData<BeamData> getDataAndFinish() {
-        this.closeFile();
+    public ExtractedTableData<BeamData> getData() {
         return dataObject;
     }
 
@@ -177,12 +185,12 @@ public class BeamListExtractor extends ExcelDataSourceExtractor<BeamData> {
      * @return
      */
     protected Boolean firstRowOk(Row row) {
-        Cell cell = row.getCell(0);
+        Cell cell = XLSHelper.getCellByColumnIndex(row, 0);
+        if (cell == null) return false;
+
         if (cell.getCellType().equals(CellType.STRING)) {
             String val = cell.getStringCellValue();
-            if (val.toUpperCase().trim().equals(BEAM_SCHEDULE_TITLE)) {
-                return true;
-            }
+            if (val.toUpperCase().trim().equals(BEAM_SCHEDULE_TITLE)) return true;
         }
 
         return false;
@@ -195,10 +203,15 @@ public class BeamListExtractor extends ExcelDataSourceExtractor<BeamData> {
      * @return
      */
     protected Boolean secondRowOk(Row row) {
-        Cell cellA = row.getCell(0);
-        Cell cellB = row.getCell(1);
-        Cell cellC = row.getCell(2);
-        Cell cellD = row.getCell(3);
+        Cell cellA = XLSHelper.getCellByColumnIndex(row, 0);
+        Cell cellB = XLSHelper.getCellByColumnIndex(row, 1);
+        Cell cellC = XLSHelper.getCellByColumnIndex(row, 2);
+        Cell cellD = XLSHelper.getCellByColumnIndex(row, 3);
+
+        if (cellA == null
+            || cellB == null
+            || cellC == null
+            || cellD == null) return false;
 
         if (cellA.getCellType().equals(CellType.STRING)
                 && cellB.getCellType().equals(CellType.STRING)
@@ -227,7 +240,12 @@ public class BeamListExtractor extends ExcelDataSourceExtractor<BeamData> {
      * @return
      */
     protected Boolean thirdRowNotEmpty(Row row) {
-        Cell cellA = row.getCell(0);
+        Cell cellA = XLSHelper.getCellByColumnIndex(row, 0);
+        if (cellA == null) {
+            LOG.debug("First cell of third row was null");
+            return false;
+        }
+
         if (cellA.getCellType().equals(CellType.STRING)) {
             String valA = cellA.getStringCellValue();
             if (!valA.isEmpty()) {
@@ -244,7 +262,9 @@ public class BeamListExtractor extends ExcelDataSourceExtractor<BeamData> {
      * @return
      */
     protected Boolean lastRowOk(Row row) {
-        Cell cellD = row.getCell(3);
+        Cell cellD = XLSHelper.getCellByColumnIndex(row, 3);
+        if (cellD == null) return false;
+
         if (cellD.getCellType().equals(CellType.STRING)) {
             String valD = cellD.getStringCellValue();
             if (valD.toLowerCase().contains(" mm")) {
@@ -257,10 +277,12 @@ public class BeamListExtractor extends ExcelDataSourceExtractor<BeamData> {
 
     /**
      * Detects the type of row of beam list.
+     * -1 = Unknown / Unrecognised
      * 0 = Beam Group Row (eg 250 UB 26)
      * 1 = Beam Data Row (qty, id, length)
      * 2 = Beam Group Totals Row
      * 3 = Grand Total Row
+     *
      * @param row
      * @param dataFormatter
      * @return
@@ -270,26 +292,43 @@ public class BeamListExtractor extends ExcelDataSourceExtractor<BeamData> {
             return ROW_TYPE_GRAND_TOTAL;
         }
 
-        Cell cellA = row.getCell(0);
-        String aStrVal = dataFormatter.formatCellValue(cellA);
-        if (!aStrVal.isEmpty()) {
-            return ROW_TYPE_BEAM_GROUP;
+        Cell cellA = XLSHelper.getCellByColumnIndex(row, 0);
+        if (cellA == null) {
+//            return ROW_TYPE_UNKNOWN;
+            LOG.warn("First cell of this row did not exist, may affect row type check");
+        } else {
+            String aStrVal = dataFormatter.formatCellValue(cellA);
+            if (!aStrVal.isEmpty()) {
+                return ROW_TYPE_BEAM_GROUP;
+            }
         }
 
-        Cell cellC = row.getCell(2);
-        Cell cellD = row.getCell(3);
-        String cStrVal = dataFormatter.formatCellValue(cellC);
-        String dStrVal = dataFormatter.formatCellValue(cellD).toLowerCase();
-        if (cStrVal.isEmpty() && dStrVal.contains(" mm")) {
-            return ROW_TYPE_BEAM_GROUP_TOTAL;
+        Cell cellC = XLSHelper.getCellByColumnIndex(row, 2);
+        Cell cellD = XLSHelper.getCellByColumnIndex(row, 3);
+        if (cellC == null || cellD == null) {
+            LOG.warn("Third and Fourth cell of this row did not exist, may affect row type check");
+        } else {
+            String cStrVal = dataFormatter.formatCellValue(cellC);
+            String dStrVal = dataFormatter.formatCellValue(cellD).toLowerCase();
+            if (cStrVal.isEmpty() && dStrVal.contains(" mm")) {
+                return ROW_TYPE_BEAM_GROUP_TOTAL;
+            }
         }
 
         return ROW_TYPE_BEAM_DATA;
     }
 
+    /**
+     * Check the Totals row value matched the calculated total of beams found for that group
+     * @param row
+     * @param dataFormatter
+     * @param expQtyTotal
+     * @param expLenTotal
+     * @return
+     */
     protected boolean totalRowAndDataMatched(Row row, DataFormatter dataFormatter, Long expQtyTotal, Long expLenTotal) {
         // qty total
-        Cell cellB = row.getCell(1);
+        Cell cellB = XLSHelper.getCellByColumnIndex(row, 1);
         if (cellB.getCellType().equals(CellType.NUMERIC)) {
             Long valB = (long) cellB.getNumericCellValue();
             if (!valB.equals(expQtyTotal)) {
@@ -299,7 +338,9 @@ public class BeamListExtractor extends ExcelDataSourceExtractor<BeamData> {
         }
 
         // len total
-        Cell cellD = row.getCell(3);
+        Cell cellD = XLSHelper.getCellByColumnIndex(row, 3);
+        if (cellD == null) LOG.debug("Cell D value was null, false will be returned");
+
         String dStrVal = dataFormatter.formatCellValue(cellD).toLowerCase();
 
         dStrVal = dStrVal.replace(" mm", "");
@@ -328,23 +369,23 @@ public class BeamListExtractor extends ExcelDataSourceExtractor<BeamData> {
      */
     protected BeamData processBeamData(Row row, String currentBeamGroup) {
         BeamData beamData = new BeamData(currentBeamGroup);
-        Cell cellB = row.getCell(1);
-        Cell cellC = row.getCell(2);
-        Cell cellD = row.getCell(3);
+        Cell cellB = XLSHelper.getCellByColumnIndex(row, 1);
+        Cell cellC = XLSHelper.getCellByColumnIndex(row, 2);
+        Cell cellD = XLSHelper.getCellByColumnIndex(row, 3);
 
         Long qty = 0L;
         String id = "";
         Long length = 0L;
 
-        if (cellB.getCellType().equals(CellType.NUMERIC)) {
+        if (cellB != null && cellB.getCellType().equals(CellType.NUMERIC)) {
             qty = (long) cellB.getNumericCellValue();
         }
 
-        if (cellC.getCellType().equals(CellType.STRING)) {
+        if (cellC != null && cellC.getCellType().equals(CellType.STRING)) {
             id = cellC.getStringCellValue();
         }
 
-        if (cellD.getCellType().equals(CellType.NUMERIC)) {
+        if (cellD != null && cellD.getCellType().equals(CellType.NUMERIC)) {
             length = (long) cellD.getNumericCellValue();
         }
 

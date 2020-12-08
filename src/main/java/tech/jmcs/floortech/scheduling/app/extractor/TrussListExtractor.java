@@ -4,9 +4,10 @@ import org.apache.poi.ss.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.jmcs.floortech.scheduling.app.EndCapCW260;
-import tech.jmcs.floortech.scheduling.app.extractor.exception.DataExtractorException;
+import tech.jmcs.floortech.scheduling.app.exception.DataExtractorException;
 import tech.jmcs.floortech.scheduling.app.extractor.model.ExtractedTableData;
 import tech.jmcs.floortech.scheduling.app.extractor.model.TrussData;
+import tech.jmcs.floortech.scheduling.app.util.XLSHelper;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -49,6 +50,8 @@ public class TrussListExtractor extends ExcelDataSourceExtractor<TrussData> {
     protected TrussListExtractor(Path excelFile) throws IOException {
         super(excelFile);
 
+        this.setTargetSheetNumber(0);
+
         this.columnNames = new HashMap<>();
         this.columnNames.put(0, COL_A_TITLE);
         this.columnNames.put(1, COL_B_TITLE);
@@ -68,7 +71,7 @@ public class TrussListExtractor extends ExcelDataSourceExtractor<TrussData> {
     public Boolean isValid() {
         // check the truss listing xls layout and cell contents for expected layout
 
-        Sheet firstSheet = xls.getSheetByNumber(0);
+        Sheet firstSheet = this.getTargetSheet();
 
         DataFormatter dataFormatter = new DataFormatter();
 
@@ -90,7 +93,7 @@ public class TrussListExtractor extends ExcelDataSourceExtractor<TrussData> {
                     /** Even Rows Will be Truss Rows */
 
                     if (!trussIdOk(row, lastTrussId)) errors.add("Missing or Duplicated Truss ID found (Expected sequential ID's starting from 01)");
-                    String trussId = dataFormatter.formatCellValue(row.getCell(0));
+                    String trussId = dataFormatter.formatCellValue(XLSHelper.getCellByColumnIndex(row, 0)); // null cell ok
                     lastTrussId = trussId;
                     LOG.debug("Just found a new truss id: {}", lastTrussId);
 
@@ -118,14 +121,9 @@ public class TrussListExtractor extends ExcelDataSourceExtractor<TrussData> {
             return;
         }
 
-        if (!this.xls.isOpen()) {
-            // log
-            return;
-        }
-
         ExtractedTableData<TrussData> data = new ExtractedTableData(DataSourceName.BEAM_LISTING.toString());
 
-        Sheet sheet = this.xls.getSheetByNumber(0);
+        Sheet sheet = this.getTargetSheet();
         int c = -1;
         TrussData lastTrussData = null;
 
@@ -157,8 +155,8 @@ public class TrussListExtractor extends ExcelDataSourceExtractor<TrussData> {
     }
 
     @Override
-    public ExtractedTableData<TrussData> getDataAndFinish() {
-        this.closeFile();
+    public ExtractedTableData<TrussData> getData() {
+//        this.closeFile();
         return this.dataObject;
     }
 
@@ -169,7 +167,9 @@ public class TrussListExtractor extends ExcelDataSourceExtractor<TrussData> {
      * @return
      */
     protected boolean trussIdOk(Row row, String lastTrussId) {
-        Cell cellA = row.getCell(0);
+        Cell cellA = XLSHelper.getCellByColumnIndex(row, 0);
+        if (cellA == null) return false;
+
         if (cellA.getCellType().equals(CellType.STRING)) {
             String valA = cellA.getStringCellValue();
 
@@ -219,15 +219,24 @@ public class TrussListExtractor extends ExcelDataSourceExtractor<TrussData> {
     protected boolean secondRowOk(Row row) {
 
         int cellCount = row.getPhysicalNumberOfCells();
-        if (cellCount != this.columnNames.size()) {
-            LOG.debug("Cell count ({}) did not match expected {}", cellCount, this.columnNames.size());
-            return false;
-        }
+
+        /** Removed below code
+         * Should not compare column counts, tables with extra columns should still be readable as long
+         * as long as the expected columns are in their expected location.
+        */
+//        if (cellCount != this.columnNames.size()) {
+//            LOG.debug("Cell count ({}) did not match expected {}", cellCount, this.columnNames.size());
+//            return false;
+//        }
 
         int n = -1;
         for (Cell cell : row) {
             n += 1;
 
+            if (n+1 > this.columnNames.size()) {
+                LOG.debug("There are extra columns in this table that are being ignored: {}", cell.getStringCellValue());
+                continue;
+            }
             String colName = this.columnNames.get(n).toLowerCase().trim();
 
             if (cell.getCellType().equals(CellType.STRING)) {
@@ -250,7 +259,9 @@ public class TrussListExtractor extends ExcelDataSourceExtractor<TrussData> {
      * @return
      */
     protected boolean firstRowOk(Row row) {
-        Cell cellA = row.getCell(0);
+        Cell cellA = XLSHelper.getCellByColumnIndex(row, 0);
+        if (cellA == null) return false;
+
         if (cellA.getCellType().equals(CellType.STRING)) {
             String aLwr = cellA.getStringCellValue().toLowerCase();
 
@@ -293,17 +304,17 @@ public class TrussListExtractor extends ExcelDataSourceExtractor<TrussData> {
     protected TrussData processTrussData(Row row, DataFormatter dataFormatter) {
         TrussData trussData = new TrussData();
 
-        Cell a = row.getCell(0);
-        Cell b = row.getCell(1);
-        Cell c = row.getCell(2);
-        Cell d = row.getCell(3);
-        Cell e = row.getCell(4);
-        Cell f = row.getCell(5);
-        Cell g = row.getCell(6);
-        Cell h = row.getCell(7);
-        Cell i = row.getCell(8);
-        Cell j = row.getCell(9);
-        Cell k = row.getCell(10);
+        Cell a = XLSHelper.getCellByColumnIndex(row,0);
+        Cell b = XLSHelper.getCellByColumnIndex(row,1);
+        Cell c = XLSHelper.getCellByColumnIndex(row,2);
+        Cell d = XLSHelper.getCellByColumnIndex(row,3);
+        Cell e = XLSHelper.getCellByColumnIndex(row,4);
+        Cell f = XLSHelper.getCellByColumnIndex(row,5);
+//        Cell g = XLSHelper.getCellByColumnIndex(row,6); // total necs - don't need
+//        Cell h = XLSHelper.getCellByColumnIndex(row,7); // total stds - don't need
+//        Cell i = XLSHelper.getCellByColumnIndex(row,8); // gap
+        Cell j = XLSHelper.getCellByColumnIndex(row,9);
+        Cell k = XLSHelper.getCellByColumnIndex(row,10);
 
         /**
          * Get Data from cells
@@ -316,19 +327,19 @@ public class TrussListExtractor extends ExcelDataSourceExtractor<TrussData> {
         String cutWebs = dataFormatter.formatCellValue(k);
 
         Long numberOf = 0l;
-        if (b.getCellType().equals(CellType.NUMERIC)) {
+        if (b != null && b.getCellType().equals(CellType.NUMERIC)) {
             long valB = (long) b.getNumericCellValue();
             numberOf = valB;
         }
 
         Long length = 0l;
-        if (c.getCellType().equals(CellType.NUMERIC)) {
+        if (c != null && c.getCellType().equals(CellType.NUMERIC)) {
             long valC = (long) c.getNumericCellValue();
             length = valC;
         }
 
         Boolean hasPeno = false;
-        if (j.getCellType().equals(CellType.BOOLEAN)) {
+        if (j != null && j.getCellType().equals(CellType.BOOLEAN)) {
             hasPeno = c.getBooleanCellValue();
         }
 

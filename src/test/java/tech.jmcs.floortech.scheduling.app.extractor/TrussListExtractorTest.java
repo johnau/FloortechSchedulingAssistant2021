@@ -1,7 +1,7 @@
 package tech.jmcs.floortech.scheduling.app.extractor;
 
 import org.junit.jupiter.api.Test;
-import tech.jmcs.floortech.scheduling.app.extractor.exception.DataExtractorException;
+import tech.jmcs.floortech.scheduling.app.exception.DataExtractorException;
 import tech.jmcs.floortech.scheduling.app.extractor.model.ExtractedTableData;
 import tech.jmcs.floortech.scheduling.app.extractor.model.TrussData;
 
@@ -17,7 +17,8 @@ class TrussListExtractorTest {
      */
     @Test
     void testValidateTrussList() {
-        Path excelFile = Paths.get("D:\\appdev\\floortech_env\\test_data\\example jobs\\19383\\LOT 5017 JOSEPH BANK BOULEVARD, BANKSIA GROVE - 19383.xls");
+//        Path excelFile = Paths.get("D:\\appdev\\floortech_env\\test_data\\example jobs\\19383\\LOT 5017 JOSEPH BANK BOULEVARD, BANKSIA GROVE - 19383.xls");
+        Path excelFile = Paths.get("D:\\appdev\\floortech_env\\test_data\\example jobs\\19383\\LOT 5017 JOSEPH BANK BOULEVARD, BANKSIA GROVE - 19383_EXTRA.xls");
         TrussListExtractor extractor = DataExtractorFactory.openExcelFileAsTrussList(excelFile);
         if (extractor == null) {
             System.out.println("Could not create extractor, is the file in open in excel? does it exist?");
@@ -26,8 +27,6 @@ class TrussListExtractorTest {
 
         Boolean valid = extractor.isValid();
         System.out.printf("File is valid: %s \n", valid.toString());
-
-        extractor.closeFile();
     }
 
     @Test
@@ -46,7 +45,7 @@ class TrussListExtractorTest {
             return;
         }
 
-        ExtractedTableData<TrussData> data = extractor.getDataAndFinish();
+        ExtractedTableData<TrussData> data = extractor.getData();
         Map<Long, TrussData> dataMap = data.getData();
         dataMap.forEach((id, td) -> {
             String trussId = td.getTrussId();
@@ -102,7 +101,7 @@ class TrussListExtractorTest {
         Boolean valid = extractor.isValid();
         System.out.printf("File is valid: %s \n", valid.toString());
 
-        extractor.closeFile();
+//        extractor.closeFile();
     }
 
 }

@@ -1,7 +1,7 @@
 package tech.jmcs.floortech.scheduling.app.extractor;
 
 import org.junit.jupiter.api.Test;
-import tech.jmcs.floortech.scheduling.app.extractor.exception.DataExtractorException;
+import tech.jmcs.floortech.scheduling.app.exception.DataExtractorException;
 import tech.jmcs.floortech.scheduling.app.extractor.model.ExtractedTableData;
 import tech.jmcs.floortech.scheduling.app.extractor.model.SlabData;
 
@@ -49,7 +49,7 @@ class SlabListExtractorTest {
             fail();
         }
 
-        ExtractedTableData<SlabData> data = extractor.getDataAndFinish();
+        ExtractedTableData<SlabData> data = extractor.getData();
         Map<Long, SlabData> dataMap = data.getData();
 
         dataMap.forEach( (id, sd) -> {
