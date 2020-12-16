@@ -1,0 +1,34 @@
+.sub-header {
+    -fx-font: bold 12px "System";
+}
+
+.row-container {
+    -fx-alignment: CENTER_LEFT;
+    -fx-spacing: 2px;
+    -fx-max-width: 600px;
+}
+
+.field-label {
+    -fx-pref-width: 125px;
+}
+
+.field {
+    -fx-pref-width: 250px;
+}
+
+.short-field {
+    -fx-pref-width: 150px;
+}
+
+.bold-text {
+    -fx-font: bold 12px "System";
+}
+
+.big-text {
+    -fx-font: bold 14px "System";
+}
+
+.centered-row {
+    -fx-alignment: CENTER;
+    -fx-spacing: 5px;
+}

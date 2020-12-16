@@ -29,6 +29,7 @@ public class SettingsLoader {
      * @param settingsHolder
      */
     protected SettingsLoader(SettingsHolder settingsHolder, SettingsWriter settingsWriter) {
+        LOG.info("SettingsLoader constructing...");
         this.settingsHolder = settingsHolder;
         this.settingsWriter = settingsWriter;
     }

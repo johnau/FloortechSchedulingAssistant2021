@@ -24,6 +24,12 @@ import java.util.ResourceBundle;
 public class SettingsPresenter implements Initializable {
     protected static final Logger LOG = LoggerFactory.getLogger(SettingsPresenter.class);
 
+    @Inject
+    private SettingsHolder settingsHolder;
+
+    @Inject
+    private SettingsWriter settingsWriter;
+
     @FXML
     private AnchorPane mainAnchorPane;
 
@@ -54,15 +60,9 @@ public class SettingsPresenter implements Initializable {
     @FXML
     private Button discardSettingsAndCloseButton;
 
-    @Inject
-    private SettingsHolder settingsHolder;
-
-    @Inject
-    private SettingsWriter settingsWriter;
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        LOG.debug("SettingsPresenter initialized");
+        LOG.debug("SettingsPresenter initializing...");
         this.updateSettingsFromMemory();
     }
 

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+
+<VBox styleClass="small-padded" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tech.jmcs.floortech.scheduling.ui.datatarget.DataTargetPresenter">
+   <children>
+      <TitledPane text="Data Target">
+         <content>
+            <VBox styleClass="small-padded">
+               <children>
+                  <HBox styleClass="row-container">
+                     <children>
+                        <Label styleClass="field-label" text="Excel Scheduling File:" />
+                        <TextField fx:id="schedulingFilePathTextField" promptText="eg. C:\..\scheduilng_19000.xls" styleClass="field" />
+                        <Button mnemonicParsing="false" onAction="#handleBrowseSchedulingFileButtonAction" text="Change..." />
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+         </content>
+      </TitledPane>
+   </children>
+   <stylesheets>
+      <URL value="@../global.css" />
+      <URL value="@datatarget.css" />
+   </stylesheets>
+</VBox>

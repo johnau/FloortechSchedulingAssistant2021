@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import java.net.URL?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="small-padded" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tech.jmcs.floortech.scheduling.ui.extractors.ExtractorsPresenter">
+   <children>
+      <TitledPane text="Data Sources" VBox.vgrow="NEVER">
+         <content>
+            <VBox styleClass="small-padded">
+               <children>
+                  <HBox>
+                     <children>
+                        <Label styleClass="field-label" text="Detailing Job Folder:" />
+                        <TextField fx:id="detailingFolderPathTextfield" promptText="eg. C:\..\19000" styleClass="field" />
+                        <Button mnemonicParsing="false" onAction="#handleBrowseJobFolderButtonAction" text="Change..." />
+                        <Button mnemonicParsing="false" styleClass="bold-text" text="Auto-Fill" />
+                     </children>
+                     <styleClass>
+                        <String fx:value="row-container" />
+                        <String fx:value="centered-row" />
+                        <String fx:value="small-padded" />
+                        <String fx:value="highlight" />
+                     </styleClass>
+                  </HBox>
+                  <Separator prefWidth="200.0" />
+                  <HBox styleClass="small-padded">
+                     <children>
+                        <Label text="Data Sources:">
+                           <styleClass>
+                              <String fx:value="bold-text" />
+                              <String fx:value="big-text" />
+                           </styleClass>
+                        </Label>
+                     </children>
+                  </HBox>
+                  <VBox fx:id="dataSourceVbox" />
+                  <HBox alignment="CENTER" onMouseClicked="#handleAddExtractorButtonAction" styleClass="centered-row">
+                     <children>
+                        <HBox styleClass="centered-row">
+                           <children>
+                              <Button disable="true" mnemonicParsing="false" onAction="#handleAddExtractorButtonAction" text="+" />
+                              <Label text="Add Data Source" textFill="#a4a4a4" />
+                           </children>
+                        </HBox>
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+         </content>
+      </TitledPane>
+   </children>
+   <stylesheets>
+      <URL value="@../global.css" />
+      <URL value="@extractors.css" />
+   </stylesheets>
+</VBox>

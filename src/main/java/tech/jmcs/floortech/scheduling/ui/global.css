@@ -10,3 +10,13 @@
     -fx-padding: 5;
     -fx-spacing: 5;
 }
+
+.juicy-button {
+    -fx-font: bold 20px "System";
+    -fx-text-fill: #5588ff;
+}
+
+.highlight {
+    -fx-background-color: #dddddd;
+    -fx-background-radius: 5px;
+}

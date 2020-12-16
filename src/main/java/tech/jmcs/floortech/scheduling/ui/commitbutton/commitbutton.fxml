@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+
+<VBox styleClass="small-padded" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tech.jmcs.floortech.scheduling.ui.commitbutton.CommitButtonPresenter">
+   <children>
+      <HBox alignment="CENTER" maxWidth="1.7976931348623157E308" prefHeight="50.0" styleClass="centered-row">
+         <children>
+            <Button mnemonicParsing="false" onAction="#handleCommitButtonAction" styleClass="juicy-button" text="Commit Data" />
+         </children>
+      </HBox>
+   </children>
+   <stylesheets>
+      <URL value="@../global.css" />
+      <URL value="@commitbutton.css" />
+   </stylesheets>
+</VBox>

@@ -1,5 +1,6 @@
 .sub-header {
     -fx-font: bold 12px "System";
+    -fx-underline: true;
 }
 
 .row-container {

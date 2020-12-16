@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tech.jmcs.floortech.scheduling.ui.dashboard.DashboardPresenter">
+   <stylesheets>
+      <URL value="@../global.css" />
+      <URL value="@dashboard.css" />
+   </stylesheets>
+   <children>
+      <HBox layoutX="14.0" layoutY="14.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="50.0" styleClass="main-container" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <HBox alignment="CENTER_LEFT">
+               <children>
+                  <Label styleClass="main-header" text="Floortech Data Scraper | Scheduling" />
+               </children>
+            </HBox>
+            <HBox fx:id="toolbarHbox" alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS" />
+         </children>
+      </HBox>
+      <SplitPane dividerPositions="0.3" layoutY="50.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
+         <items>
+            <ScrollPane fitToHeight="true" fitToWidth="true" maxWidth="800.0" minWidth="100.0">
+               <content>
+                  <AnchorPane>
+                     <children>
+                        <VBox fx:id="leftPanelVbox" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <children>
+                              <VBox fx:id="quickLookupVbox" VBox.vgrow="NEVER" />
+                              <VBox fx:id="extractorsVbox" VBox.vgrow="NEVER" />
+                              <VBox fx:id="extractButtonVbox" VBox.vgrow="NEVER" />
+                              <VBox fx:id="dataTargetVbox" VBox.vgrow="NEVER" />
+                              <VBox fx:id="commitButtonVbox" VBox.vgrow="NEVER" />
+                           </children></VBox>
+                     </children>
+                  </AnchorPane>
+               </content>
+            </ScrollPane>
+            <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="200.0">
+               <children>
+                  <ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <content>
+                        <AnchorPane fx:id="rightPanelAnchorPane" />
+                     </content>
+                  </ScrollPane>
+                  <HBox maxWidth="1.7976931348623157E308" prefHeight="50.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+               </children>
+            </AnchorPane>
+         </items>
+      </SplitPane>
+   </children>
+</AnchorPane>
