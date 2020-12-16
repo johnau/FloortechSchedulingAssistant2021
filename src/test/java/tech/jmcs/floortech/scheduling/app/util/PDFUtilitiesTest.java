@@ -10,7 +10,9 @@ class PDFUtilitiesTest {
 
     @Test
     public void testReadPdfAsText() {
-        Path pdfPath = Paths.get("D:\\appdev\\floortech_env\\test_data\\example jobs\\19383\\19383.pdf");
+        Path resourceDirectory = Paths.get("src","test","resources");
+        String absolutePath = resourceDirectory.toFile().getAbsolutePath();
+        Path pdfPath = Paths.get(absolutePath, "19383", "19383.pdf");
         String t = null;
         try {
             t = PDFUtilities.readPdfAsText(pdfPath);
@@ -23,7 +25,9 @@ class PDFUtilitiesTest {
 
     @Test
     public void testReadPdfAsText2() {
-        Path pdfPath = Paths.get("D:\\appdev\\floortech_env\\test_data\\example jobs\\ForTestingSchedulingApp.pdf");
+        Path resourceDirectory = Paths.get("src","test","resources");
+        String absolutePath = resourceDirectory.toFile().getAbsolutePath();
+        Path pdfPath = Paths.get(absolutePath, "TestJob.pdf");
         String t = null;
         try {
             t = PDFUtilities.readPdfAsText(pdfPath);

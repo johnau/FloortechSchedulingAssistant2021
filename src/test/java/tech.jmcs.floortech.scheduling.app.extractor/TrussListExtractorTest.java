@@ -1,9 +1,11 @@
 package tech.jmcs.floortech.scheduling.app.extractor;
 
 import org.junit.jupiter.api.Test;
+import tech.jmcs.floortech.scheduling.app.datasource.extractor.DataExtractorFactory;
+import tech.jmcs.floortech.scheduling.app.datasource.extractor.TrussListExtractor;
 import tech.jmcs.floortech.scheduling.app.exception.DataExtractorException;
-import tech.jmcs.floortech.scheduling.app.extractor.model.ExtractedTableData;
-import tech.jmcs.floortech.scheduling.app.extractor.model.TrussData;
+import tech.jmcs.floortech.scheduling.app.datasource.model.ExtractedTableData;
+import tech.jmcs.floortech.scheduling.app.datasource.model.TrussData;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -11,14 +13,18 @@ import java.util.List;
 import java.util.Map;
 
 class TrussListExtractorTest {
+    private String getResourcePath() {
+        Path resourceDirectory = Paths.get("src","test","resources");
+        String absolutePath = resourceDirectory.toFile().getAbsolutePath();
+        return absolutePath;
+    }
 
     /**
      * Test for checking if truss list is valid format / layout
      */
     @Test
     void testValidateTrussList() {
-//        Path excelFile = Paths.get("D:\\appdev\\floortech_env\\test_data\\example jobs\\19383\\LOT 5017 JOSEPH BANK BOULEVARD, BANKSIA GROVE - 19383.xls");
-        Path excelFile = Paths.get("D:\\appdev\\floortech_env\\test_data\\example jobs\\19383\\LOT 5017 JOSEPH BANK BOULEVARD, BANKSIA GROVE - 19383_EXTRA.xls");
+        Path excelFile = Paths.get(getResourcePath(), "19383", "LOT 5017 JOSEPH BANK BOULEVARD, BANKSIA GROVE - 19383_EXTRA.xls");
         TrussListExtractor extractor = DataExtractorFactory.openExcelFileAsTrussList(excelFile);
         if (extractor == null) {
             System.out.println("Could not create extractor, is the file in open in excel? does it exist?");
@@ -31,7 +37,8 @@ class TrussListExtractorTest {
 
     @Test
     void testExtractTrussListData() {
-        Path excelFile = Paths.get("D:\\appdev\\floortech_env\\test_data\\example jobs\\19383\\LOT 5017 JOSEPH BANK BOULEVARD, BANKSIA GROVE - 19383.xls");
+        Path excelFile = Paths.get(getResourcePath(), "19383", "LOT 5017 JOSEPH BANK BOULEVARD, BANKSIA GROVE - 19383.xls");
+//        Path excelFile = Paths.get("D:\\appdev\\floortech_env\\Floortech\\drafting\\jobs\\1DETAILING\\FLOORTECH JULY'19-ON\\17974\\LOT 246 (#22) TRINGA CIRCLE, WATERFORD - 17974.XLS");
         TrussListExtractor extractor = DataExtractorFactory.openExcelFileAsTrussList(excelFile);
         if (extractor == null) {
             System.out.println("Could not create extractor, is the file in open in excel? does it exist?");
@@ -91,7 +98,7 @@ class TrussListExtractorTest {
      */
     @Test
     void testValidateTrussList2() {
-        Path excelFile = Paths.get("D:\\appdev\\floortech_env\\test_data\\example jobs\\19383\\LOT 5017 JOSEPH BANK BOULEVARD, BANKSIA GROVE - 19383_EXTRA.xls");
+        Path excelFile = Paths.get(getResourcePath(), "19383", "LOT 5017 JOSEPH BANK BOULEVARD, BANKSIA GROVE - 19383_EXTRA.xls");
         TrussListExtractor extractor = DataExtractorFactory.openExcelFileAsTrussList2(excelFile);
         if (extractor == null) {
             System.out.println("Could not create extractor, is the file in open in excel? does it exist?");

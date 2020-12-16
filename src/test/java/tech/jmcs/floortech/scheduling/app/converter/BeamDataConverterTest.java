@@ -2,9 +2,10 @@ package tech.jmcs.floortech.scheduling.app.converter;
 
 import org.apache.commons.math3.util.Precision;
 import org.junit.jupiter.api.Test;
-import tech.jmcs.floortech.scheduling.app.extractor.model.BeamData;
-import tech.jmcs.floortech.scheduling.app.extractor.model.ExtractedTableData;
-import tech.jmcs.floortech.scheduling.app.BeamTreatment;
+import tech.jmcs.floortech.scheduling.app.datasource.converter.BeamDataConverter;
+import tech.jmcs.floortech.scheduling.app.datasource.model.BeamData;
+import tech.jmcs.floortech.scheduling.app.datasource.model.ExtractedTableData;
+import tech.jmcs.floortech.scheduling.app.types.BeamTreatment;
 
 import java.util.Map;
 

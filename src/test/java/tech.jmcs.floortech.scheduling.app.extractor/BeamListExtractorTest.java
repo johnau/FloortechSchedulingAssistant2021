@@ -1,9 +1,11 @@
 package tech.jmcs.floortech.scheduling.app.extractor;
 
 import org.junit.jupiter.api.Test;
+import tech.jmcs.floortech.scheduling.app.datasource.extractor.BeamListExtractor;
+import tech.jmcs.floortech.scheduling.app.datasource.extractor.DataExtractorFactory;
 import tech.jmcs.floortech.scheduling.app.exception.DataExtractorException;
-import tech.jmcs.floortech.scheduling.app.extractor.model.BeamData;
-import tech.jmcs.floortech.scheduling.app.extractor.model.ExtractedTableData;
+import tech.jmcs.floortech.scheduling.app.datasource.model.BeamData;
+import tech.jmcs.floortech.scheduling.app.datasource.model.ExtractedTableData;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -11,12 +13,18 @@ import java.util.Map;
 
 class BeamListExtractorTest {
 
+    private String getResourcePath() {
+        Path resourceDirectory = Paths.get("src","test","resources");
+        String absolutePath = resourceDirectory.toFile().getAbsolutePath();
+        return absolutePath;
+    }
+
     /**
      * Test if a beam list is a valid format / layout
      */
     @Test
     public void testValidateBeamList() {
-        Path excelFile = Paths.get("D:\\appdev\\floortech_env\\test_data\\example jobs\\19383\\Beam Listing 19383.xls");
+        Path excelFile = Paths.get(getResourcePath(), "19383", "Beam Listing 19383.xls");
         BeamListExtractor extractor = DataExtractorFactory.openExcelFileAsBeamList(excelFile);
         if (extractor == null) {
             System.out.println("Could not create extractor, is the file in open in excel? does it exist?");
@@ -29,7 +37,7 @@ class BeamListExtractorTest {
 
     @Test
     public void testExtractBeamData() {
-        Path excelFile = Paths.get("D:\\appdev\\floortech_env\\test_data\\example jobs\\19383\\Beam Listing 19383.xls");
+        Path excelFile = Paths.get(getResourcePath(), "19383", "Beam Listing 19383.xls");
         BeamListExtractor extractor = DataExtractorFactory.openExcelFileAsBeamList(excelFile);
         if (extractor == null) {
             System.out.println("Could not create extractor, is the file in open in excel? does it exist?");

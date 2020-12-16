@@ -5,8 +5,9 @@ import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.junit.jupiter.api.Test;
+import tech.jmcs.floortech.scheduling.app.datasource.extractor.*;
 import tech.jmcs.floortech.scheduling.app.exception.DataExtractorException;
-import tech.jmcs.floortech.scheduling.app.extractor.model.ExtractedTableData;
+import tech.jmcs.floortech.scheduling.app.datasource.model.ExtractedTableData;
 import tech.jmcs.floortech.scheduling.app.util.ExcelCellAddress;
 import tech.jmcs.floortech.scheduling.app.util.XLSHelper;
 
@@ -20,10 +21,16 @@ import java.util.regex.Pattern;
 import static org.junit.jupiter.api.Assertions.*;
 
 class GenericExcelHorizontalTableDataExtractorTest {
+    private String getResourcePath() {
+        Path resourceDirectory = Paths.get("src","test","resources");
+        String absolutePath = resourceDirectory.toFile().getAbsolutePath();
+        return absolutePath;
+    }
 
+    @SuppressWarnings("unchecked")
     @Test
     void testValidateGeneric() {
-        Path excelFile = Paths.get("D:\\appdev\\floortech_env\\test_data\\example jobs\\19383\\Beam Listing 19383.xls");
+        Path excelFile = Paths.get(getResourcePath(), "19383", "Beam Listing 19383.xls");
         Map<ExcelCellAddress, String> tableLayout = new HashMap<>();
         tableLayout.put(new ExcelCellAddress(0, 2), "$data_start$");
         tableLayout.put(new ExcelCellAddress(0, 0), "BEAM SCHEDULE");
@@ -31,11 +38,15 @@ class GenericExcelHorizontalTableDataExtractorTest {
         tableLayout.put(new ExcelCellAddress(1, 1), "Qty");
         tableLayout.put(new ExcelCellAddress(2, 1), "ID");
         tableLayout.put(new ExcelCellAddress(3, 1), "Length");
-        Map<Integer, String> columnMap = new HashMap<>();
-        columnMap.put(0, "Beam Type");
-        columnMap.put(1, "Quantity");
-        columnMap.put(2, "ID");
-        columnMap.put(3, "Length");
+        Map<Integer, GenericExtractorColumnDescription> columnMap = new HashMap<>();
+        GenericExtractorColumnDescription beamCol = new GenericExtractorColumnDescription("Beam Type", 0, GenericExtractorColumnDataType.TEXT);
+        GenericExtractorColumnDescription quantityCol = new GenericExtractorColumnDescription("Quantity", 1, GenericExtractorColumnDataType.NUMERIC);
+        GenericExtractorColumnDescription idCol = new GenericExtractorColumnDescription("ID", 2, GenericExtractorColumnDataType.TEXT);
+        GenericExtractorColumnDescription lengthCol = new GenericExtractorColumnDescription("Length", 3, GenericExtractorColumnDataType.NUMERIC);
+        columnMap.put(0, beamCol);
+        columnMap.put(1, quantityCol);
+        columnMap.put(2, idCol);
+        columnMap.put(3, lengthCol);
 
         List<Integer> validRowDataList = Arrays.asList(1, 2, 3);
 
@@ -49,6 +60,7 @@ class GenericExcelHorizontalTableDataExtractorTest {
         System.out.printf("Generic table is valid: %s", isValid);
     }
 
+    @SuppressWarnings("unchecked")
     /**
      * TODO: Use the generic file extract test methods for documentation
      */
@@ -60,8 +72,9 @@ class GenericExcelHorizontalTableDataExtractorTest {
         extractGenericFileThree_xlsx(); // sheets list xlsx
     }
 
+    @SuppressWarnings("unchecked")
     private void extractGenericFileOne() {
-        Path excelPath = Paths.get("D:\\appdev\\floortech_env\\test_data\\example jobs\\19383\\Beam Listing 19383.xls");
+        Path excelPath = Paths.get(getResourcePath(), "19383", "Beam Listing 19383.xls");
         Map<ExcelCellAddress, String> tableLayout = new HashMap<>();
 
         tableLayout.put(new ExcelCellAddress(0, 2), "$data_start$");
@@ -76,11 +89,15 @@ class GenericExcelHorizontalTableDataExtractorTest {
         String idColName = "ID";
         String lenColName = "Length";
 
-        Map<Integer, String> columnMap = new HashMap<>();
-        columnMap.put(0, beamColName);
-        columnMap.put(1, qtyColName);
-        columnMap.put(2, idColName);
-        columnMap.put(3, lenColName);
+        Map<Integer, GenericExtractorColumnDescription> columnMap = new HashMap<>();
+        GenericExtractorColumnDescription beamCol = new GenericExtractorColumnDescription(beamColName, 0, GenericExtractorColumnDataType.TEXT);
+        GenericExtractorColumnDescription qtyCol = new GenericExtractorColumnDescription(qtyColName, 1, GenericExtractorColumnDataType.NUMERIC);
+        GenericExtractorColumnDescription idCol = new GenericExtractorColumnDescription(idColName, 2, GenericExtractorColumnDataType.TEXT);
+        GenericExtractorColumnDescription lenCol = new GenericExtractorColumnDescription(lenColName, 3, GenericExtractorColumnDataType.NUMERIC);
+        columnMap.put(0, beamCol);
+        columnMap.put(1, qtyCol);
+        columnMap.put(2, idCol);
+        columnMap.put(3, lenCol);
 
         List<Integer> validRowDataList = Arrays.asList(1, 2, 3);
 
@@ -115,8 +132,9 @@ class GenericExcelHorizontalTableDataExtractorTest {
         });
     }
 
+    @SuppressWarnings("unchecked")
     private void extractGenericFileTwo() {
-        Path excelPath = Paths.get("D:\\appdev\\floortech_env\\test_data\\example jobs\\19383\\LOT 5017 JOSEPH BANK BOULEVARD, BANKSIA GROVE - 19383.xls");
+        Path excelPath = Paths.get(getResourcePath(), "19383", "LOT 5017 JOSEPH BANK BOULEVARD, BANKSIA GROVE - 19383.xls");
         Map<ExcelCellAddress, String> tableLayout = new HashMap<>();
 
         tableLayout.put(new ExcelCellAddress(0, 2), "$data_start$");
@@ -136,18 +154,29 @@ class GenericExcelHorizontalTableDataExtractorTest {
         String hasPenoColName = "Has Peno";
         String webCutsColName = "Peno Web Cuts";
 
-        Map<Integer, String> columnMap = new HashMap<>();
-        columnMap.put(0, idColName);
-        columnMap.put(1, numOfColName);
-        columnMap.put(2, lengthColName);
-        columnMap.put(3, typeColName);
-        columnMap.put(4, lEcColName);
-        columnMap.put(5, rEcColName);
-        columnMap.put(6, necColName);
-        columnMap.put(7, stdColName);
+        Map<Integer, GenericExtractorColumnDescription> columnMap = new HashMap<>();
+        GenericExtractorColumnDescription idCol = new GenericExtractorColumnDescription(idColName, 0, GenericExtractorColumnDataType.TEXT);
+        GenericExtractorColumnDescription numOfCol = new GenericExtractorColumnDescription(numOfColName, 1, GenericExtractorColumnDataType.NUMERIC);
+        GenericExtractorColumnDescription lengthCol = new GenericExtractorColumnDescription(lengthColName, 2, GenericExtractorColumnDataType.NUMERIC);
+        GenericExtractorColumnDescription typeCol = new GenericExtractorColumnDescription(typeColName, 3, GenericExtractorColumnDataType.TEXT);
+        GenericExtractorColumnDescription lEcCol = new GenericExtractorColumnDescription(lEcColName, 4, GenericExtractorColumnDataType.TEXT);
+        GenericExtractorColumnDescription rEcCol = new GenericExtractorColumnDescription(rEcColName, 5, GenericExtractorColumnDataType.TEXT);
+        GenericExtractorColumnDescription necCol = new GenericExtractorColumnDescription(necColName, 6, GenericExtractorColumnDataType.TEXT);
+        GenericExtractorColumnDescription stdCol = new GenericExtractorColumnDescription(stdColName, 7, GenericExtractorColumnDataType.TEXT);
+        GenericExtractorColumnDescription hasPenoCol = new GenericExtractorColumnDescription(hasPenoColName, 9, GenericExtractorColumnDataType.BOOLEAN);
+        GenericExtractorColumnDescription webCutsCol = new GenericExtractorColumnDescription(webCutsColName, 10, GenericExtractorColumnDataType.TEXT);
+
+        columnMap.put(0, idCol);
+        columnMap.put(1, numOfCol);
+        columnMap.put(2, lengthCol);
+        columnMap.put(3, typeCol);
+        columnMap.put(4, lEcCol);
+        columnMap.put(5, rEcCol);
+        columnMap.put(6, necCol);
+        columnMap.put(7, stdCol);
         // column 8 is gap
-        columnMap.put(9, hasPenoColName);
-        columnMap.put(10, webCutsColName);
+        columnMap.put(9, hasPenoCol);
+        columnMap.put(10, webCutsCol);
 
         List<Integer> validRowDataList = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7);
 
@@ -256,21 +285,23 @@ class GenericExcelHorizontalTableDataExtractorTest {
         });
     }
 
+    @SuppressWarnings("unchecked")
     private void extractGenericFileThree_xls() {
-        Path excelPath = Paths.get("D:\\appdev\\floortech_env\\test_data\\SHEET LISTING.xls");
+        Path excelPath = Paths.get(getResourcePath(), "SHEET LISTING.xls");
         this.extractGenericFileThree(excelPath);
     }
 
+    @SuppressWarnings("unchecked")
     private void extractGenericFileThree_xlsx() {
-        Path excelPath = Paths.get("D:\\appdev\\floortech_env\\test_data\\SHEET LISTING.xlsx");
+        Path excelPath = Paths.get(getResourcePath(), "SHEET LISTING.xlsx");
         this.extractGenericFileThree(excelPath);
     }
 
+    @SuppressWarnings("unchecked")
     private void extractGenericFileThree(Path excelPath) {
 
         Map<ExcelCellAddress, String> tableLayout = new HashMap<>();
-
-        tableLayout.put(new ExcelCellAddress(0, 2), "$data_start$");
+        tableLayout.put(new ExcelCellAddress(0, 2), ExcelDataSourceExtractor.DATA_START);
         tableLayout.put(new ExcelCellAddress(0, 0), "Sheets");
         tableLayout.put(new ExcelCellAddress(0, 1), "Length");
         tableLayout.put(new ExcelCellAddress(1, 1), "ID");
@@ -280,10 +311,13 @@ class GenericExcelHorizontalTableDataExtractorTest {
         String idColName = "ID";
         String qtyColName = "Quantity";
 
-        Map<Integer, String> columnMap = new HashMap<>();
-        columnMap.put(0, lenColName);
-        columnMap.put(1, idColName);
-        columnMap.put(2, qtyColName);
+        Map<Integer, GenericExtractorColumnDescription> columnMap = new HashMap<>();
+        GenericExtractorColumnDescription lenCol = new GenericExtractorColumnDescription(lenColName, 0, GenericExtractorColumnDataType.NUMERIC);
+        GenericExtractorColumnDescription idCol = new GenericExtractorColumnDescription(idColName, 1, GenericExtractorColumnDataType.TEXT);
+        GenericExtractorColumnDescription quantityCol = new GenericExtractorColumnDescription(qtyColName, 2, GenericExtractorColumnDataType.NUMERIC);
+        columnMap.put(0, lenCol);
+        columnMap.put(1, idCol);
+        columnMap.put(2, quantityCol);
 
         List<Integer> validRowDataList = Arrays.asList(1, 2);
 
@@ -330,17 +364,20 @@ class GenericExcelHorizontalTableDataExtractorTest {
         });
     }
 
-    private Map<Long, Map<String, Object>> extractGeneric(Path excelPath, Map<ExcelCellAddress, String> tableLayout, Map<Integer, String> columnMap, List<Integer> validRowDataList) {
+    @SuppressWarnings("unchecked")
+    private Map<Long, Map<String, Object>> extractGeneric(Path excelPath, Map<ExcelCellAddress, String> tableLayout, Map<Integer, GenericExtractorColumnDescription> columnMap, List<Integer> validRowDataList) {
         return extractGeneric(excelPath, tableLayout, columnMap, validRowDataList, null);
     }
 
-    private Map<Long, Map<String, Object>> extractGeneric(Path excelPath, Map<ExcelCellAddress, String> tableLayout, Map<Integer, String> columnMap, List<Integer> validRowDataList, List<Function<Sheet, String>> tableValidationFunctions) {
+    @SuppressWarnings("unchecked")
+    private Map<Long, Map<String, Object>> extractGeneric(Path excelPath, Map<ExcelCellAddress, String> tableLayout, Map<Integer, GenericExtractorColumnDescription> columnMap, List<Integer> validRowDataList, List<Function<Sheet, String>> tableValidationFunctions) {
         return extractGeneric(excelPath, tableLayout, columnMap, validRowDataList, tableValidationFunctions, null);
     }
 
+    @SuppressWarnings("unchecked")
     private Map<Long, Map<String, Object>> extractGeneric(Path excelPath,
                                                           Map<ExcelCellAddress, String> tableLayout,
-                                                          Map<Integer, String> columnMap,
+                                                          Map<Integer, GenericExtractorColumnDescription> columnMap,
                                                           List<Integer> validRowDataList,
                                                           List<Function<Sheet, String>> tableValidationFunctions,
                                                           List<Function<Row, String>> recordValidationFunctions) {
@@ -374,6 +411,7 @@ class GenericExcelHorizontalTableDataExtractorTest {
         return dataMap;
     }
 
+    @SuppressWarnings("unchecked")
     private Long extractTrussId(String trussId) {
         Pattern rx = Pattern.compile("[a-zA-Z]{2}");
         Matcher matcher = rx.matcher(trussId);

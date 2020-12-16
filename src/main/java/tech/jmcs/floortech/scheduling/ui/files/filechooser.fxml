@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import java.net.URL?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="small-padded" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tech.jmcs.floortech.scheduling.ui.files.FileChooserPresenter">
+   <children>
+      <VBox alignment="CENTER" styleClass="small-padded">
+         <children>
+            <HBox alignment="CENTER" styleClass="centered-row" VBox.vgrow="NEVER">
+               <children>
+                  <Label styleClass="field-label" text="Job Number:" />
+                  <TextField fx:id="jobNumberTextfield" promptText="eg. 19000">
+                     <styleClass>
+                        <String fx:value="short-field" />
+                        <String fx:value="big-text" />
+                     </styleClass>
+                  </TextField>
+                  <Button fx:id="autoFillAllButton" mnemonicParsing="false" onAction="#handleAutoFillButtonAction" styleClass="big-text" text="Auto-Fill All" />
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+      <TitledPane text="Data Sources" VBox.vgrow="NEVER">
+         <content>
+            <VBox styleClass="small-padded">
+               <children>
+                  <HBox styleClass="row-container">
+                     <children>
+                        <Label styleClass="field-label" text="Detailing Job Folder:" />
+                        <TextField fx:id="detailingFolderPathTextfield" promptText="eg. C:\..\19000" styleClass="field" />
+                        <Button fx:id="detailingFolderPathBrowseButton" mnemonicParsing="false" onAction="#handleBrowseJobFolderButtonAction" text="Change..." />
+                        <Button mnemonicParsing="false" styleClass="bold-text" text="Auto-Fill" />
+                     </children>
+                  </HBox>
+                  <Separator prefWidth="200.0" />
+                  <Label text="Data Sources:" />
+                  <VBox fx:id="dataSourceVbox" />
+                  <HBox alignment="CENTER" styleClass="centered-row">
+                     <children>
+                        <HBox fx:id="addDataSourceButtonHbox" styleClass="centered-row">
+                           <children>
+                              <Button fx:id="addDataSourceButton" disable="true" mnemonicParsing="false" text="+" />
+                              <Label text="Add Data Source" textFill="#a4a4a4" />
+                           </children>
+                        </HBox>
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+         </content>
+      </TitledPane>
+      <HBox alignment="CENTER" prefHeight="50.0">
+         <children>
+            <Button mnemonicParsing="false" onAction="#handleExtractDataButtonAction" styleClass="juicy-button" text="Extract Data" />
+         </children>
+      </HBox>
+      <TitledPane text="Data Target">
+         <content>
+            <VBox styleClass="small-padded">
+               <children>
+                  <HBox styleClass="row-container">
+                     <children>
+                        <Label styleClass="field-label" text="Excel Scheduling File:" />
+                        <TextField fx:id="schedulingFilePathTextfield" promptText="eg. C:\..\scheduilng_19000.xls" styleClass="field" />
+                        <Button fx:id="schedulingFilePathBrowseButton" mnemonicParsing="false" onAction="#handleBrowseSchedulingFileButtonAction" text="Change..." />
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+         </content>
+      </TitledPane>
+      <HBox alignment="CENTER" prefHeight="50.0">
+         <children>
+            <Button mnemonicParsing="false" styleClass="juicy-button" text="Commit Data" />
+         </children>
+      </HBox>
+   </children>
+   <stylesheets>
+      <URL value="@../global.css" />
+      <URL value="@filechooser.css" />
+   </stylesheets>
+</VBox>

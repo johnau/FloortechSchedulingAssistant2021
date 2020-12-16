@@ -1,0 +1,16 @@
+.sub-header {
+    -fx-font: bold 12px "System";
+}
+
+.row-container {
+    -fx-alignment: CENTER_LEFT;
+    -fx-spacing: 2px;
+}
+
+.setting-label {
+    -fx-pref-width: 200px;
+}
+
+.setting-field {
+    -fx-pref-width: 250px;
+}

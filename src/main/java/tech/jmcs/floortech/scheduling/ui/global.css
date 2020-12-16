@@ -1,0 +1,12 @@
+.main-header {
+    -fx-font: bold 18px "System";
+}
+
+.main-container {
+    -fx-padding: 5;
+}
+
+.small-padded {
+    -fx-padding: 5;
+    -fx-spacing: 5;
+}

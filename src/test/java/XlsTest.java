@@ -74,7 +74,9 @@ public class XlsTest {
     @Test
     void testAddCellsAndWrite() {
         // open existing excel file
-        Path excelFile = Paths.get("D:\\appdev\\floortech_env\\test_data\\ADDROW.xls");
+        Path resourceDirectory = Paths.get("src","test","resources");
+        String absolutePath = resourceDirectory.toFile().getAbsolutePath();
+        Path excelFile = Paths.get(absolutePath, "ADDROW.xls");
         File f = excelFile.toFile();
         if (!f.exists()) {
             System.out.println("Could not find file");

@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane fx:id="mainAnchorPane" prefHeight="400.0" prefWidth="600.0" styleClass="main-container" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tech.jmcs.floortech.scheduling.ui.settings.SettingsPresenter">
+   <children>
+      <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <Label styleClass="main-header" text="Settings" />
+         </children>
+      </HBox>
+      <ScrollPane fitToHeight="true" fitToWidth="true" layoutY="47.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="353.0" prefWidth="600.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
+        <content>
+            <VBox prefHeight="200.0" prefWidth="100.0" styleClass="small-padded">
+               <children>
+                  <HBox styleClass="row-container">
+                     <children>
+                        <Label styleClass="setting-label" text="Job Folders (Detailing) Root" />
+                        <TextField fx:id="detailingFoldersRootTextfield" styleClass="setting-field" />
+                        <Button mnemonicParsing="false" text="Change..." />
+                     </children>
+                  </HBox>
+                  <HBox styleClass="row-container">
+                     <children>
+                        <Label styleClass="setting-label" text="Job Folders (Scheduling) Root" />
+                        <TextField fx:id="schedulingFolderRootTextfield" styleClass="setting-field" />
+                        <Button mnemonicParsing="false" text="Change..." />
+                     </children>
+                  </HBox>
+                  <HBox styleClass="row-container">
+                     <children>
+                        <Label styleClass="setting-label" text="Built-in Truss Data Extractor Enabled:" />
+                        <CheckBox fx:id="trussExtractorEnabledCheckbox" mnemonicParsing="false" />
+                     </children>
+                  </HBox>
+                  <HBox styleClass="row-container">
+                     <children>
+                        <Label styleClass="setting-label" text="Built-in Beam Data Extractor Enabled:" />
+                        <CheckBox fx:id="beamExtractorEnabledCheckbox" mnemonicParsing="false" />
+                     </children>
+                  </HBox>
+                  <HBox styleClass="row-container">
+                     <children>
+                        <Label styleClass="setting-label" text="Built-in Slab Data Extractor Enabled:" />
+                        <CheckBox fx:id="slabExtractorEnabledCheckbox" mnemonicParsing="false" />
+                     </children>
+                  </HBox>
+                  <HBox styleClass="row-container">
+                     <children>
+                        <Label styleClass="setting-label" text="Built-in Sheet Data Extractor Enabled:" />
+                        <CheckBox fx:id="sheetExtractorEnabledCheckbox" mnemonicParsing="false" />
+                     </children>
+                  </HBox>
+                  <VBox>
+                     <children>
+                        <Label styleClass="sub-header" text="Data Sources" />
+                        <VBox fx:id="dataSourcesVbox" styleClass="small-padded" VBox.vgrow="NEVER" />
+                     </children>
+                  </VBox>
+               </children>
+            </VBox>
+        </content>
+      </ScrollPane>
+      <HBox alignment="CENTER" maxHeight="-Infinity" prefHeight="50.0" prefWidth="200.0" styleClass="small-padded" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+         <children>
+            <Button fx:id="discardSettingsAndCloseButton" mnemonicParsing="false" onAction="#handleDiscardSettingsAndCloseButtonAction" text="Cancel" />
+            <Button fx:id="saveSettingsAndCloseButton" mnemonicParsing="false" onAction="#handleSaveSettingsAndCloseButtonAction" text="Save Settings &amp; Close" />
+         </children>
+      </HBox>
+   </children>
+   <stylesheets>
+      <URL value="@../global.css" />
+      <URL value="@settings.css" />
+   </stylesheets>
+</AnchorPane>
