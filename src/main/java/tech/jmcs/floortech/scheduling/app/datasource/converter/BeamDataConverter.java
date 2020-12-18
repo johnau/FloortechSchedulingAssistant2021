@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import tech.jmcs.floortech.scheduling.app.datasource.model.BeamData;
 import tech.jmcs.floortech.scheduling.app.datasource.model.ExtractedTableData;
 import tech.jmcs.floortech.scheduling.app.types.BeamTreatment;
+import tech.jmcs.floortech.scheduling.app.types.DataSourceExtractorType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,8 +31,9 @@ public class BeamDataConverter extends DataFormatConverter<BeamData> {
     @Override
     public Map<String, Object> convert(ExtractedTableData<BeamData> d) {
         String tableDataName = d.getName();
-        if (!tableDataName.equals("BEAM LISTING")) {
+        if (!tableDataName.toUpperCase().equals(DataSourceExtractorType.BEAM.getName())) {
             // log warn
+            LOG.warn("Expected table name : BEAM LISTING but got: {}", tableDataName);
         }
 
         Map<String, Object> valuesMap = new HashMap<>();
@@ -58,7 +60,7 @@ public class BeamDataConverter extends DataFormatConverter<BeamData> {
                     if (val.getClass().equals(Double.class)) {
                         Double lVal = (Double) val;
                         double newTotal = lVal + bTotal_m;
-                        LOG.debug("Increased total of {} from: {} to: {} (+{}mm)", schedulingNameString, lVal, newTotal, bTotal_m);
+                        LOG.debug("Increased total of {} from: {} to: {} (+{}m)", schedulingNameString, lVal, newTotal, bTotal_m);
                         return newTotal;
                     } else {
                         LOG.debug("This Beam Data ({}) value {} was not type Long as expected. Actual type: {}", schedulingNameString, val, val.getClass().getName());

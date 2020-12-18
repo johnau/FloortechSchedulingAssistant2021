@@ -8,6 +8,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tech.jmcs.floortech.scheduling.app.ExtractedDataToScheduleConverter;
+import tech.jmcs.floortech.scheduling.app.schedulewriter.ExcelScheduleScanner;
 import tech.jmcs.floortech.scheduling.app.settings.SettingsHolder;
 import tech.jmcs.floortech.scheduling.app.settings.SettingsLoader;
 import tech.jmcs.floortech.scheduling.app.settings.SettingsWriter;
@@ -44,8 +46,9 @@ public class DashboardPresenter implements Initializable {
     @Inject private DataFrameView dataFrameView;
 
     @Inject private SettingsLoader settingsLoader;
-    @Inject private SettingsHolder settingsHolder;
     @Inject private SettingsWriter settingsWriter;
+    @Inject private SettingsHolder settingsHolder;
+    @Inject private ExtractedDataToScheduleConverter extractedDataConverter;
     @Inject private ExtractorComponentHolderFX extractorHolder;
     @Inject private ExtractorManagerFX extractorManager;
     @Inject private ExtractedDataHolderFX extractedDataHolder;

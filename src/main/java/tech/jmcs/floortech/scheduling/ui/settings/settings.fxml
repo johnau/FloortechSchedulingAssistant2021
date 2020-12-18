@@ -4,15 +4,20 @@
 <?import java.net.URL?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane fx:id="mainAnchorPane" prefHeight="400.0" prefWidth="600.0" styleClass="main-container" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tech.jmcs.floortech.scheduling.ui.settings.SettingsPresenter">
+<AnchorPane fx:id="mainAnchorPane" prefHeight="1500.0" prefWidth="600.0" styleClass="main-container" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tech.jmcs.floortech.scheduling.ui.settings.SettingsPresenter">
    <children>
       <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -25,7 +30,15 @@
                <children>
                   <VBox styleClass="small-padded">
                      <children>
-                        <Label styleClass="sub-header" text="File Locations" />
+                        <HBox>
+                           <children>
+                              <Label styleClass="sub-header" text="File Locations" />
+                           </children>
+                           <styleClass>
+                              <String fx:value="small-padded" />
+                              <String fx:value="highlight" />
+                           </styleClass>
+                        </HBox>
                         <HBox>
                            <children>
                               <Label styleClass="setting-label" text="Job Folders (Detailing) Root" />
@@ -53,63 +66,438 @@
                   <Separator prefWidth="200.0" />
                   <VBox styleClass="small-padded">
                      <children>
-                        <Label styleClass="sub-header" text="Data Source Extractors" />
-                        <HBox>
+                        <VBox styleClass="small-padded">
                            <children>
-                              <Label styleClass="setting-label" text="Built-in Truss Data Extractor Enabled" />
-                              <CheckBox fx:id="trussExtractorEnabledCheckbox" mnemonicParsing="false" />
-                           </children>
-                           <styleClass>
-                              <String fx:value="row-container" />
-                              <String fx:value="small-padded" />
-                           </styleClass>
-                        </HBox>
-                        <HBox>
-                           <children>
-                              <Label styleClass="setting-label" text="Built-in Beam Data Extractor Enabled" />
-                              <CheckBox fx:id="beamExtractorEnabledCheckbox" mnemonicParsing="false" />
-                           </children>
-                           <styleClass>
-                              <String fx:value="row-container" />
-                              <String fx:value="small-padded" />
-                           </styleClass>
-                        </HBox>
-                        <HBox>
-                           <children>
-                              <Label styleClass="setting-label" text="Built-in Slab Data Extractor Enabled" />
-                              <CheckBox fx:id="slabExtractorEnabledCheckbox" mnemonicParsing="false" />
-                           </children>
-                           <styleClass>
-                              <String fx:value="row-container" />
-                              <String fx:value="small-padded" />
-                           </styleClass>
-                        </HBox>
-                        <HBox>
-                           <children>
-                              <Label styleClass="setting-label" text="Built-in Sheet Data Extractor Enabled" />
-                              <CheckBox fx:id="sheetExtractorEnabledCheckbox" mnemonicParsing="false" />
-                           </children>
-                           <styleClass>
-                              <String fx:value="row-container" />
-                              <String fx:value="small-padded" />
-                           </styleClass>
-                        </HBox>
-                        <VBox>
-                           <children>
-                              <VBox fx:id="dataSourcesVbox" styleClass="small-padded" VBox.vgrow="NEVER" />
+                              <HBox>
+                                 <children>
+                                    <Label styleClass="sub-header" text="Excel Schedule Layout" />
+                                 </children>
+                                 <styleClass>
+                                    <String fx:value="small-padded" />
+                                    <String fx:value="highlight" />
+                                 </styleClass>
+                              </HBox>
+                              <HBox>
+                                 <children>
+                                    <Label styleClass="field-label" text="Schedule Sheet Name" />
+                                    <TextField fx:id="excelScheduleSheetNameTextField" promptText="Mat. Estim &amp; Data" styleClass="field" />
+                                 </children>
+                                 <styleClass>
+                                    <String fx:value="row-container" />
+                                    <String fx:value="small-padded" />
+                                 </styleClass>
+                              </HBox>
+                              <Separator prefWidth="200.0" />
+                              <HBox layoutX="15.0" layoutY="15.0" maxWidth="600.0">
+                                 <children>
+                                    <VBox alignment="CENTER" HBox.hgrow="ALWAYS">
+                                       <children>
+                                          <HBox styleClass="small-padded">
+                                             <children>
+                                                <Label text="Column Layout" />
+                                             </children>
+                                          </HBox>
+                                          <TableView maxHeight="200.0" maxWidth="400.0" minHeight="150.0" prefHeight="200.0" prefWidth="400.0" VBox.vgrow="NEVER">
+                                            <columns>
+                                              <TableColumn prefWidth="75.0" text="Type" />
+                                              <TableColumn prefWidth="75.0" text="Column" />
+                                            </columns>
+                                             <columnResizePolicy>
+                                                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                                             </columnResizePolicy>
+                                          </TableView>
+                                          <HBox>
+                                             <children>
+                                                <Button mnemonicParsing="false" text="Edit Selected" />
+                                             </children>
+                                             <styleClass>
+                                                <String fx:value="small-padded" />
+                                                <String fx:value="centered-row" />
+                                             </styleClass>
+                                          </HBox>
+                                       </children>
+                                    </VBox>
+                                 </children>
+                                 <styleClass>
+                                    <String fx:value="row-container" />
+                                    <String fx:value="small-padded" />
+                                 </styleClass>
+                              </HBox>
+                              <Separator prefWidth="200.0" />
+                              <HBox maxWidth="600.0" styleClass="centered-row" VBox.vgrow="NEVER">
+                                 <children>
+                                    <VBox styleClass="centered-row" HBox.hgrow="ALWAYS">
+                                       <children>
+                                          <HBox styleClass="small-padded">
+                                             <children>
+                                                <Label text="Schedule Sections" />
+                                             </children>
+                                          </HBox>
+                                          <ListView fx:id="scheduleSectionsList" maxHeight="200.0" maxWidth="400.0" minHeight="150.0" prefHeight="200.0" prefWidth="400.0" />
+                                          <HBox maxWidth="600.0" styleClass="centered-row" VBox.vgrow="NEVER">
+                                             <children>
+                                                <Button mnemonicParsing="false" onAction="#handleAddScheduleSectionButtonAction" text="Add Section" />
+                                                <Button mnemonicParsing="false" onAction="#handleRemoveScheduleSectionButtonAction" text="Remove Section" />
+                                                <Button mnemonicParsing="false" onAction="#handleTestScheduleSectionsButtonAction" styleClass="text-button" text="Test" />
+                                             </children>
+                                          </HBox>
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </HBox>
                            </children>
                         </VBox>
                      </children>
                   </VBox>
                   <Separator prefWidth="200.0" />
+                  <VBox styleClass="small-padded">
+                     <children>
+                        <HBox>
+                           <children>
+                              <Label styleClass="sub-header" text="Data Source Extractors" />
+                           </children>
+                           <styleClass>
+                              <String fx:value="small-padded" />
+                              <String fx:value="highlight" />
+                           </styleClass>
+                        </HBox>
+                        <VBox>
+                           <children>
+                              <HBox>
+                                 <children>
+                                    <Label styleClass="sub-header" text="Truss Data Extractor (Built-in)" />
+                                 </children>
+                                 <styleClass>
+                                    <String fx:value="row-container" />
+                                    <String fx:value="small-padded" />
+                                 </styleClass>
+                              </HBox>
+                              <VBox styleClass="inset">
+                                 <children>
+                                    <HBox>
+                                       <children>
+                                          <Label styleClass="setting-label" text="Built-in Truss Data Extractor Enabled" />
+                                          <CheckBox fx:id="trussExtractorEnabledCheckbox" mnemonicParsing="false" />
+                                       </children>
+                                       <styleClass>
+                                          <String fx:value="row-container" />
+                                          <String fx:value="small-padded" />
+                                       </styleClass>
+                                    </HBox>
+                                    <HBox>
+                                       <children>
+                                          <Label styleClass="setting-label-short" text="Schedule Section" />
+                                          <ChoiceBox fx:id="trussScheduleSectionChoiceBox" prefWidth="150.0" />
+                                       </children>
+                                       <styleClass>
+                                          <String fx:value="row-container" />
+                                          <String fx:value="small-padded" />
+                                       </styleClass>
+                                    </HBox>
+                                    <TitledPane expanded="false" text="Truss Data Schedule Entries">
+                                       <content>
+                                          <VBox styleClass="small-padded">
+                                             <children>
+                                                <HBox styleClass="row-container">
+                                                   <children>
+                                                      <Label styleClass="setting-label" text="CW260 Entry" />
+                                                      <TextField />
+                                                   </children>
+                                                </HBox>
+                                                <HBox styleClass="row-container">
+                                                   <children>
+                                                      <Label styleClass="setting-label" text="CW346 Entry" />
+                                                      <TextField />
+                                                   </children>
+                                                </HBox>
+                                                <HBox styleClass="row-container">
+                                                   <children>
+                                                      <Label styleClass="setting-label" text="Standard Endcap Entry" />
+                                                      <TextField />
+                                                   </children>
+                                                </HBox>
+                                                <HBox styleClass="row-container">
+                                                   <children>
+                                                      <Label styleClass="setting-label" text="NEC Endcap Entry" />
+                                                      <TextField />
+                                                   </children>
+                                                </HBox>
+                                                <HBox styleClass="row-container">
+                                                   <children>
+                                                      <Label styleClass="setting-label" text="Air-Con Peno Entry" />
+                                                      <TextField />
+                                                   </children>
+                                                </HBox>
+                                                <HBox styleClass="row-container">
+                                                   <children>
+                                                      <Button mnemonicParsing="false" styleClass="text-button" text="Test" />
+                                                   </children>
+                                                </HBox>
+                                             </children>
+                                          </VBox>
+                                       </content>
+                                       <styleClass>
+                                          <String fx:value="subtle-title-pane" />
+                                          <String fx:value="small-padded" />
+                                       </styleClass>
+                                    </TitledPane>
+                                 </children>
+                              </VBox>
+                           </children>
+                        </VBox>
+                        <Separator prefWidth="200.0" />
+                        <VBox>
+                           <children>
+                              <HBox>
+                                 <children>
+                                    <Label styleClass="sub-header" text="Beam Data Extractor (Built-in)" />
+                                 </children>
+                                 <styleClass>
+                                    <String fx:value="row-container" />
+                                    <String fx:value="small-padded" />
+                                 </styleClass>
+                              </HBox>
+                              <VBox styleClass="inset">
+                                 <children>
+                                    <HBox>
+                                       <children>
+                                          <Label styleClass="setting-label" text="Built-in Beam Data Extractor Enabled" />
+                                          <CheckBox fx:id="beamExtractorEnabledCheckbox" mnemonicParsing="false" />
+                                       </children>
+                                       <styleClass>
+                                          <String fx:value="row-container" />
+                                          <String fx:value="small-padded" />
+                                       </styleClass>
+                                    </HBox>
+                                    <HBox>
+                                       <children>
+                                          <Label styleClass="setting-label-short" text="Schedule Section" />
+                                          <ChoiceBox fx:id="beamScheduleSectionChoiceBox" prefWidth="150.0" />
+                                       </children>
+                                       <styleClass>
+                                          <String fx:value="row-container" />
+                                          <String fx:value="small-padded" />
+                                       </styleClass>
+                                    </HBox>
+                                    <TitledPane expanded="false" text="Beam Data Schedule Entries">
+                                       <content>
+                                          <VBox styleClass="small-padded">
+                                             <children>
+                                                <HBox styleClass="row-container">
+                                                   <children>
+                                                      <Label styleClass="setting-label" text="Black Keyword" />
+                                                      <TextField />
+                                                   </children>
+                                                </HBox>
+                                                <HBox styleClass="row-container">
+                                                   <children>
+                                                      <Label styleClass="setting-label" text="Galvanized keyword" />
+                                                      <TextField />
+                                                   </children>
+                                                </HBox>
+                                                <HBox styleClass="row-container">
+                                                   <children>
+                                                      <Label styleClass="setting-label" text="Dimet Keyword" />
+                                                      <TextField />
+                                                   </children>
+                                                </HBox>
+                                                <HBox styleClass="row-container">
+                                                   <children>
+                                                      <Label styleClass="setting-label" text="Epoxy Keyword" />
+                                                      <TextField />
+                                                   </children>
+                                                </HBox>
+                                                <HBox styleClass="row-container">
+                                                   <children>
+                                                      <Button mnemonicParsing="false" styleClass="text-button" text="Test" />
+                                                   </children>
+                                                </HBox>
+                                             </children>
+                                          </VBox>
+                                       </content>
+                                       <styleClass>
+                                          <String fx:value="subtle-title-pane" />
+                                          <String fx:value="small-padded" />
+                                       </styleClass>
+                                    </TitledPane>
+                                 </children>
+                              </VBox>
+                           </children>
+                        </VBox>
+                        <Separator prefWidth="200.0" />
+                        <VBox>
+                           <children>
+                              <HBox>
+                                 <children>
+                                    <Label styleClass="sub-header" text="Slab Data Extractor (Built-in)" />
+                                 </children>
+                                 <styleClass>
+                                    <String fx:value="row-container" />
+                                    <String fx:value="small-padded" />
+                                 </styleClass>
+                              </HBox>
+                              <VBox styleClass="inset">
+                                 <children>
+                                    <HBox>
+                                       <children>
+                                          <Label styleClass="setting-label" text="Built-in Slab Data Extractor Enabled" />
+                                          <CheckBox fx:id="slabExtractorEnabledCheckbox" mnemonicParsing="false" />
+                                       </children>
+                                       <styleClass>
+                                          <String fx:value="row-container" />
+                                          <String fx:value="small-padded" />
+                                       </styleClass>
+                                    </HBox>
+                                    <HBox>
+                                       <children>
+                                          <Label styleClass="setting-label-short" text="Schedule Section" />
+                                          <ChoiceBox fx:id="slabScheduleSectionChoiceBox" prefWidth="150.0" />
+                                       </children>
+                                       <styleClass>
+                                          <String fx:value="row-container" />
+                                          <String fx:value="small-padded" />
+                                       </styleClass>
+                                    </HBox>
+                                    <TitledPane expanded="false" text="Slab Data Schedule Entries">
+                                       <content>
+                                          <VBox styleClass="small-padded">
+                                             <children>
+                                                <HBox styleClass="row-container">
+                                                   <children>
+                                                      <Label styleClass="setting-label" text="Internal 83mm Slab Entry" />
+                                                      <TextField />
+                                                   </children>
+                                                </HBox>
+                                                <HBox styleClass="row-container">
+                                                   <children>
+                                                      <Label styleClass="setting-label" text="Balcony 2c RHS Entry" />
+                                                      <TextField />
+                                                   </children>
+                                                </HBox>
+                                                <HBox styleClass="row-container">
+                                                   <children>
+                                                      <Label styleClass="setting-label" text="Balcony 3c RHS Entry" />
+                                                      <TextField />
+                                                   </children>
+                                                </HBox>
+                                                <HBox styleClass="row-container">
+                                                   <children>
+                                                      <Label styleClass="setting-label" text="Balcony 2c INSITU Entry" />
+                                                      <TextField />
+                                                   </children>
+                                                </HBox>
+                                                <HBox styleClass="row-container">
+                                                   <children>
+                                                      <Label styleClass="setting-label" text="Balcony 3c INSITU Entry" />
+                                                      <TextField />
+                                                   </children>
+                                                </HBox>
+                                                <HBox styleClass="row-container">
+                                                   <children>
+                                                      <Label styleClass="setting-label" text="Balcony 4c INSITU Entry" />
+                                                      <TextField />
+                                                   </children>
+                                                </HBox>
+                                                <HBox styleClass="row-container">
+                                                   <children>
+                                                      <Label styleClass="setting-label" text="Thick Angle Entry" />
+                                                      <TextField />
+                                                   </children>
+                                                </HBox>
+                                                <HBox styleClass="row-container">
+                                                   <children>
+                                                      <Label styleClass="setting-label" text="Thin Angle Entry" />
+                                                      <TextField />
+                                                   </children>
+                                                </HBox>
+                                                <HBox styleClass="row-container">
+                                                   <children>
+                                                      <Button mnemonicParsing="false" styleClass="text-button" text="Test" />
+                                                   </children>
+                                                </HBox>
+                                             </children>
+                                          </VBox>
+                                       </content>
+                                       <styleClass>
+                                          <String fx:value="subtle-title-pane" />
+                                          <String fx:value="small-padded" />
+                                       </styleClass>
+                                    </TitledPane>
+                                 </children>
+                              </VBox>
+                           </children>
+                        </VBox>
+                        <Separator prefWidth="200.0" />
+                        <VBox>
+                           <children>
+                              <HBox>
+                                 <children>
+                                    <Label styleClass="sub-header" text="Sheet Data Extractor (Built-in)" />
+                                 </children>
+                                 <styleClass>
+                                    <String fx:value="row-container" />
+                                    <String fx:value="small-padded" />
+                                 </styleClass>
+                              </HBox>
+                              <VBox styleClass="inset">
+                                 <children>
+                                    <HBox>
+                                       <children>
+                                          <Label styleClass="setting-label" text="Built-in Sheet Data Extractor Enabled" />
+                                          <CheckBox fx:id="sheetExtractorEnabledCheckbox" mnemonicParsing="false" />
+                                       </children>
+                                       <styleClass>
+                                          <String fx:value="row-container" />
+                                          <String fx:value="small-padded" />
+                                       </styleClass>
+                                    </HBox>
+                                    <HBox>
+                                       <children>
+                                          <Label styleClass="setting-label-short" text="Schedule Section" />
+                                          <ChoiceBox fx:id="sheetScheduleSectionChoiceBox" prefWidth="150.0" />
+                                       </children>
+                                       <styleClass>
+                                          <String fx:value="row-container" />
+                                          <String fx:value="small-padded" />
+                                       </styleClass>
+                                    </HBox>
+                                    <TitledPane expanded="false" text="Sheet Data Schedule Entries">
+                                       <content>
+                                          <VBox styleClass="small-padded">
+                                             <children>
+                                                <HBox styleClass="row-container">
+                                                   <children>
+                                                      <Label styleClass="setting-label" text="Sheet Length Keyword" />
+                                                      <TextField />
+                                                   </children>
+                                                </HBox>
+                                                <HBox styleClass="row-container">
+                                                   <children>
+                                                      <Button mnemonicParsing="false" styleClass="text-button" text="Test" />
+                                                   </children>
+                                                </HBox>
+                                             </children>
+                                          </VBox>
+                                       </content>
+                                       <styleClass>
+                                          <String fx:value="subtle-title-pane" />
+                                          <String fx:value="small-padded" />
+                                       </styleClass>
+                                    </TitledPane>
+                                 </children>
+                              </VBox>
+                           </children>
+                        </VBox>
+                     </children>
+                  </VBox>
                </children>
             </VBox>
         </content>
       </ScrollPane>
       <HBox alignment="CENTER" maxHeight="-Infinity" prefHeight="50.0" prefWidth="200.0" styleClass="small-padded" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
          <children>
-            <Button fx:id="discardSettingsAndCloseButton" mnemonicParsing="false" onAction="#handleDiscardSettingsAndCloseButtonAction" text="Cancel" />
-            <Button fx:id="saveSettingsAndCloseButton" mnemonicParsing="false" onAction="#handleSaveSettingsAndCloseButtonAction" text="Save Settings &amp; Close" />
+            <Button cancelButton="true" mnemonicParsing="false" onAction="#handleDiscardSettingsAndCloseButtonAction" text="Cancel" />
+            <Button fx:id="saveAndCloseButton" defaultButton="true" mnemonicParsing="false" onAction="#handleSaveSettingsAndCloseButtonAction" text="Save Settings &amp; Close" />
          </children>
       </HBox>
    </children>

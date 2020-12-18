@@ -11,8 +11,7 @@ import java.util.Properties;
 public class SettingsWriter {
     protected static final Logger LOG = LoggerFactory.getLogger(SettingsWriter.class);
 
-    @Inject
-    private SettingsHolder settingsHolder;
+    @Inject private SettingsHolder settingsHolder;
 
     public SettingsWriter() {
     }

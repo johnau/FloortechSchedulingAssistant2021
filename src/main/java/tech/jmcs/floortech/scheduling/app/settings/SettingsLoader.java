@@ -1,25 +1,19 @@
 package tech.jmcs.floortech.scheduling.app.settings;
 
-import javafx.fxml.Initializable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import java.io.*;
-import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Properties;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class SettingsLoader {
     protected static final Logger LOG = LoggerFactory.getLogger(SettingsLoader.class);
 
-    @Inject
-    private SettingsHolder settingsHolder;
-
-    @Inject
-    private SettingsWriter settingsWriter;
+    @Inject private SettingsHolder settingsHolder;
+    @Inject private SettingsWriter settingsWriter;
 
     public SettingsLoader() {
     }
@@ -35,8 +29,10 @@ public class SettingsLoader {
     }
 
     public void load() throws IOException {
-        // TODO: Load settings from expected location
         File settingsFile = SettingsConstants.SETTINGS_FILE_PATH.toFile();
+
+        Properties defaultSettings = new Properties();
+        copyDefaultSettings(defaultSettings);
 
         Properties settings = null;
 
@@ -44,6 +40,16 @@ public class SettingsLoader {
             try {
                 settings = this.loadSettings(settingsFile);
                 LOG.debug("Loaded settings from file");
+
+                // TODO: Check if any settings are present in the defaultsettings.properties file and not in loaded settings (new app version could have new settings) and add them
+                for (Map.Entry<Object, Object> entry : defaultSettings.entrySet()) {
+                    String n = (String) entry.getKey();
+                    String v = (String) entry.getValue();
+                    if (!settings.containsKey(n)) {
+                        settings.setProperty(n, v);
+                        LOG.debug("Added a new property that was not found in the settings file on drive {} : {}", n, v);
+                    }
+                }
             } catch (IOException e) {
                 throw new IOException("Could not read the settings file");
             }
@@ -52,9 +58,7 @@ public class SettingsLoader {
         // if file does not exist, needs to be written
         boolean writeFile = false;
         if (settings == null) {
-            settings = new Properties();
-            // set default settings from memory.
-            copyDefaultSettings(settings);
+            settings = defaultSettings;
 
             LOG.debug("Copied default settings");
 
@@ -81,29 +85,7 @@ public class SettingsLoader {
     }
 
     private void copySettingsToMemory(Properties settings) {
-        Boolean builtInBeamExtractorEnabled = Boolean.parseBoolean(settings.getProperty(SettingsName.BUILT_IN_BEAM_EXTRACTOR_ENABLED.getSettingsFilePropertyName()));
-        Boolean builtInSheetExtractorEnabled = Boolean.parseBoolean(settings.getProperty(SettingsName.BUILT_IN_SHEET_EXTRACTOR_ENABLED.getSettingsFilePropertyName()));
-        Boolean builtInSlabExtractorEnabled = Boolean.parseBoolean(settings.getProperty(SettingsName.BUILT_IN_SLAB_EXTRACTOR_ENABLED.getSettingsFilePropertyName()));
-        Boolean builtInTrussExtractorEnabled = Boolean.parseBoolean(settings.getProperty(SettingsName.BUILT_IN_TRUSS_EXTRACTOR_ENABLED.getSettingsFilePropertyName()));
-        Path jobFilesSchedulingPath = Paths.get(settings.getProperty(SettingsName.JOB_FILES_SCHEDULING_PATH.getSettingsFilePropertyName()));
-        Path jobFoldersDetailingPath = Paths.get(settings.getProperty(SettingsName.JOB_FOLDERS_DETAILING_PATH.getSettingsFilePropertyName()));
-
-        LOG.debug("Converted settings: {} {} {} {} {} {}", builtInBeamExtractorEnabled, builtInSheetExtractorEnabled, builtInSlabExtractorEnabled, builtInTrussExtractorEnabled, jobFilesSchedulingPath, jobFoldersDetailingPath);
-
-        this.settingsHolder.setBuiltInBeamExtractorEnabled(builtInBeamExtractorEnabled);
-        this.settingsHolder.setBuiltInSheetExtractorEnabled(builtInSheetExtractorEnabled);
-        this.settingsHolder.setBuiltInSlabExtractorEnabled(builtInSlabExtractorEnabled);
-        this.settingsHolder.setBuiltInTrussExtractorEnabled(builtInTrussExtractorEnabled);
-        try {
-            this.settingsHolder.setJobFilesSchedulingRootPath(jobFilesSchedulingPath);
-        } catch (FileNotFoundException e) {
-            LOG.warn("Job Files scheduling Root Path in Settings can not be found");
-        }
-        try {
-            this.settingsHolder.setJobFoldersDetailingRootPath(jobFoldersDetailingPath);
-        } catch (FileNotFoundException e) {
-            LOG.warn("Job Folders Detailing Root Path in Settings can not be found");
-        }
+        SettingsHelper.propertiesObjectToSettings(settings, this.settingsHolder);
     }
 
     private void copyDefaultSettings(Properties settings) {

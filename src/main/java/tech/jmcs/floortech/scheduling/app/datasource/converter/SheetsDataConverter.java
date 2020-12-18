@@ -9,6 +9,11 @@ public class SheetsDataConverter extends DataFormatConverter<SheetData> {
 
     @Override
     public Map<String, Object> convert(ExtractedTableData<SheetData> d) {
+        /**
+         * Need to collect:
+         * - Need to collect qty of each sheet length
+         */
+
         return null;
     }
 }

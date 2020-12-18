@@ -9,6 +9,16 @@ public class TrussDataConverter extends DataFormatConverter<TrussData> {
 
     @Override
     public Map<String, Object> convert(ExtractedTableData<TrussData> d) {
+
+        /**
+         * Need to collect:
+         * - NEC Count
+         * - STD Count
+         * - Total meters truss
+         * - Air con penos
+         * -
+         */
+
         return null;
     }
 }

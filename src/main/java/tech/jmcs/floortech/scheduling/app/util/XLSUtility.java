@@ -93,6 +93,8 @@ public class XLSUtility {
     public Map<Integer, Sheet> getSheetsMatchingName(String search, boolean caseInsensitive, boolean ignoreSpecialCharacters, boolean keepOpen) {
         Map<Integer, Sheet> tSheets = new HashMap<>();
 
+        LOG.warn("getSheetsMatchingName :: NOT YET IMPLEMENTED!!!");
+
         return null;
     }
 

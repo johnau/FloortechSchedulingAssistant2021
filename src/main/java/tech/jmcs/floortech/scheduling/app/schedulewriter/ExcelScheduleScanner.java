@@ -1,52 +1,74 @@
 package tech.jmcs.floortech.scheduling.app.schedulewriter;
 
+import org.apache.poi.ss.usermodel.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import tech.jmcs.floortech.scheduling.app.settings.DefaultScheduleSections;
+import tech.jmcs.floortech.scheduling.app.settings.SettingsHolder;
+import tech.jmcs.floortech.scheduling.app.util.ExcelCellAddress;
 import tech.jmcs.floortech.scheduling.app.util.ExcelCellRange;
+import tech.jmcs.floortech.scheduling.app.util.XLSHelper;
+import tech.jmcs.floortech.scheduling.app.util.XLSUtility;
+import tech.jmcs.floortech.scheduling.ui.settings.SettingsPresenter;
 
-import java.util.HashMap;
-import java.util.Map;
+import javax.inject.Inject;
+import java.io.FileNotFoundException;
+import java.nio.file.Path;
+import java.util.*;
 
 /**
  * Class to process Excel Schedule to detect data structures + data contained
  */
 public class ExcelScheduleScanner {
+    protected static final Logger LOG = LoggerFactory.getLogger(ExcelScheduleScanner.class);
 
-    public static final int SECT_TRUSS = 1;
-    public static final int SECT_ANGLE = 2;
-    public static final int SECT_SHEET = 3;
-    public static final int SECT_STEEL = 4;
-    public static final int SECT_WELD = 5;
-    public static final int SECT_REO = 6;
-    public static final int SECT_STAIR = 7;
-    public static final int SECT_LABOUR = 8;
-    public static final int SECT_MISC = 9;
+    private SettingsHolder settingsHolder;
+    private Path scheduleFilePath;
+    private final XLSUtility xls;
 
-    public static final String BEAMS_N_BRACKETS = "BEAMS / BRACKETS";
-    public static final String ANGLE_N_FLASHING = "EDGE ANGLES & FLASHINGS";
-    public static final String FORM_SHEETS = "FORM SHEETS";
-    public static final String STRUCTURAL_STEEL = "STRUCTURAL STEEL";
-    public static final String CRANE_N_WELDING = "CRANE HIRE & SITE WELDING";
-    public static final String REO = "REINFORCEMENT";
-    public static final String STAIR_FORM = "STAIRCASE FORMWORK";
-    public static final String LABOUR = "LABOUR";
-    public static final String MISC = "MISCELLANEOUS";
-
-    private Map<Integer, String> sectionMap;
-
-    public ExcelScheduleScanner() {
-        this.sectionMap = new HashMap<>();
-        this.sectionMap.put(SECT_TRUSS, BEAMS_N_BRACKETS);
-        this.sectionMap.put(SECT_ANGLE, ANGLE_N_FLASHING);
-        this.sectionMap.put(SECT_SHEET, FORM_SHEETS);
-        this.sectionMap.put(SECT_STEEL, STRUCTURAL_STEEL);
-        this.sectionMap.put(SECT_WELD, CRANE_N_WELDING);
-        this.sectionMap.put(SECT_REO, REO);
-        this.sectionMap.put(SECT_STAIR, STAIR_FORM);
-        this.sectionMap.put(SECT_LABOUR, LABOUR);
-        this.sectionMap.put(SECT_MISC, MISC);
+    public ExcelScheduleScanner(Path excelPath, SettingsHolder settingsHolder) throws FileNotFoundException {
+        LOG.info("ExcelScheduleScanner constructing...");
+        this.settingsHolder = settingsHolder;
+        this.scheduleFilePath = excelPath;
+        try {
+            this.xls = new XLSUtility(excelPath);
+        } catch (FileNotFoundException e) {
+            LOG.warn("File not found: {}", excelPath);
+            throw e;
+        }
     }
 
-    private void updateSectionMapWithAvailableSettings() {
+    /**
+     * Checks excel schedule for all items in check list and returns any not found
+     * @param checkList
+     * @return List of not matched / not found
+     */
+    public List<String> checkScheduleContainsAll(List<String> checkList) {
+        List<String> notFound = new ArrayList<>();
 
+//        Map<Integer, Sheet> sheets = this.xls.getSheetsMatchingName(this.settingsHolder.getExcelScheduleSheetName(), true, true);
+        Sheet sheet;
+        try {
+            sheet = this.xls.getSheet(0);
+        } catch (Exception e) {
+            // sheet didnt exist?
+            return null;
+        }
+//        if (sheets.size() == 1) {
+//            Sheet sheet = sheets.get(0);
+        DataFormatter dataFormatter = new DataFormatter();
+
+        checkList.forEach( name -> {
+            ExcelCellAddress cellAddress = XLSHelper.findCellByName(sheet, this.settingsHolder.getExcelScheduleDataNameCol(), name, dataFormatter);
+            if (cellAddress == null) {
+                notFound.add(name);
+            }
+        });
+//        } else {
+//            //  TODO: Handle other cases
+//        }
+
+        return notFound;
     }
 
     /**

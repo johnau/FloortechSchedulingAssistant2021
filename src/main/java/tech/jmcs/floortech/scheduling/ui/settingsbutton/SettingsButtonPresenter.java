@@ -40,6 +40,9 @@ public class SettingsButtonPresenter implements Initializable {
         settingsStage.setScene(settingsScene);
         settingsStage.initModality(Modality.APPLICATION_MODAL);
         settingsStage.setTitle("Settings");
+        settingsStage.setWidth(800);
+        settingsStage.setHeight(1000);
+        settingsStage.setResizable(true);
         settingsStage.show();
     }
 }

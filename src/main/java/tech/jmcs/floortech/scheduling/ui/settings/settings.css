@@ -1,17 +1,30 @@
-.sub-header {
-    -fx-font: bold 12px "System";
-    -fx-underline: true;
-}
-
-.row-container {
-    -fx-alignment: CENTER_LEFT;
-    -fx-spacing: 2px;
-}
-
 .setting-label {
     -fx-pref-width: 200px;
 }
 
+.setting-label-short {
+    -fx-pref-width: 100px;
+}
+
 .setting-field {
     -fx-pref-width: 250px;
+}
+
+.inset {
+    -fx-padding: 0px 0px 0px 20px;
+}
+
+.text-button {
+    -fx-background: null;
+    -fx-border: null;
+    -fx-text-fill: #0055dd;
+
+    -fx-underline: true;
+}
+
+.subtle-title-pane > .title {
+    -fx-background-color: #ddd;
+    -fx-background-insets: 0;
+    -fx-background-radius: 0 0 0 0;
+    -fx-padding: 0.166667em 0.833333em 0.25em 0.833333em; /* 2 10 3 10 */
 }

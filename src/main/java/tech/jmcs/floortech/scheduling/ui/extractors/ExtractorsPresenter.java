@@ -14,12 +14,15 @@ import tech.jmcs.floortech.scheduling.app.types.DataSourceExtractorType;
 import tech.jmcs.floortech.scheduling.app.util.PathUtilities;
 import tech.jmcs.floortech.scheduling.ui.ExtractedDataHolderFX;
 import tech.jmcs.floortech.scheduling.ui.ExtractorComponentHolderFX;
+import tech.jmcs.floortech.scheduling.ui.settings.SettingsPresenter;
+import tech.jmcs.floortech.scheduling.ui.settings.SettingsView;
 
 import javax.inject.Inject;
 import java.io.File;
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.function.Consumer;
 
 public class ExtractorsPresenter implements Initializable {
     protected static final Logger LOG = LoggerFactory.getLogger(ExtractorsPresenter.class);
@@ -27,6 +30,7 @@ public class ExtractorsPresenter implements Initializable {
     @Inject private SettingsHolder settingsHolder;
     @Inject private ExtractedDataHolderFX extractedDataHolder;
     @Inject private ExtractorComponentHolderFX extractorHolder;
+    @Inject private SettingsView settingsView;
 
     @FXML private TextField detailingFolderPathTextfield;
     @FXML private VBox dataSourceVbox; // where data source rows are added
@@ -72,9 +76,14 @@ public class ExtractorsPresenter implements Initializable {
      * This allows this view to react to changes in settings.
      */
     private void setupBindingToSettings() {
-        settingsHolder.getLastUpdatedProperty().addListener((observable, oldDate, newDate) -> {
-            if (newDate.after(oldDate)) toggleBuiltInExtractors();
-        });
+        SettingsPresenter settingsPresenter = (SettingsPresenter) settingsView.getPresenter();
+        Consumer<Boolean> onSettingsSaveConsumer = aBoolean -> {
+            toggleBuiltInExtractors();
+        };
+        settingsPresenter.addListenerOnSave(onSettingsSaveConsumer);
+//        settingsHolder.getLastUpdatedProperty().addListener((observable, oldDate, newDate) -> {
+//            if (newDate.after(oldDate)) toggleBuiltInExtractors();
+//        });
     }
 
     /**

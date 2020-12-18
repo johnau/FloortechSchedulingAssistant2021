@@ -47,21 +47,36 @@ public class XLSHelper {
      * @throws ExcelScheduleWriterException
      */
     public static ExcelCellAddress findCellByName(Sheet schSheet, Integer column, String name, DataFormatter dataFormatter) {
+        LOG.debug("Searching for cell value: {} (in column {})", name, column);
         for (Row row : schSheet) {
             Cell cell = getCellByColumnIndex(row, column);
             if (cell == null) {
                 LOG.trace("Cell was null while trying to find name at row: {}", row.getRowNum());
                 continue;
             }
-
+            ExcelCellAddress address = new ExcelCellAddress(cell.getColumnIndex(), row.getRowNum());
             String cellValue = dataFormatter.formatCellValue(cell);
-            LOG.trace("Found cell value: {}, trying to find {}", cellValue, name);
+            LOG.trace("At cell value: {} (trying to find {})", cellValue, name);
 
-            String cellV_ucase = cellValue.toUpperCase().trim().replaceAll(" +", " ");
+            String cellValue_ucase = cellValue.toUpperCase().trim().replaceAll(" +", " ");
             String name_ucase = name.toUpperCase().trim().replaceAll(" +", " ");
 
-            if (cellV_ucase.equals(name_ucase)) {
-                return new ExcelCellAddress(cell.getColumnIndex(), row.getRowNum());
+            if (cellValue_ucase.equals(name_ucase)) {
+                LOG.debug("Matched (uppercase match)");
+                return address;
+            }
+
+            String cellValue_stripped = cellValue_ucase.replaceAll("[^A-Za-z0-9]", "");
+            String name_stripped = name_ucase.replaceAll("[^A-Za-z0-9]", "");
+
+            if (cellValue_stripped.equals(name_stripped)) {
+                LOG.debug("Matched (stripped match) {} = {} ({} = {})", cellValue_stripped, name_stripped, cellValue, name);
+                return address;
+            }
+
+            if (cellValue_stripped.contains(name_stripped) && cellValue_stripped.startsWith(name_stripped)) {
+                LOG.debug("Matched (stripped contained match) {} = {} ({} = {})", cellValue_stripped, name_stripped, cellValue, name);
+                return address;
             }
         }
 

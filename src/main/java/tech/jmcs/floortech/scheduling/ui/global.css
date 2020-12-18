@@ -1,3 +1,16 @@
+.bold-text {
+    -fx-font: bold 12px "System";
+}
+
+.big-text {
+    -fx-font: bold 14px "System";
+}
+
+.juicy-button {
+    -fx-font: bold 20px "System";
+    -fx-text-fill: #5588ff;
+}
+
 .main-header {
     -fx-font: bold 18px "System";
 }
@@ -6,14 +19,35 @@
     -fx-padding: 5;
 }
 
+.sub-header {
+    -fx-font: bold 12px "System";
+}
+
 .small-padded {
     -fx-padding: 5;
     -fx-spacing: 5;
 }
 
-.juicy-button {
-    -fx-font: bold 20px "System";
-    -fx-text-fill: #5588ff;
+.row-container {
+    -fx-alignment: CENTER_LEFT;
+    -fx-spacing: 2px;
+}
+
+.centered-row {
+    -fx-alignment: CENTER;
+    -fx-spacing: 5px;
+}
+
+.field-label {
+    -fx-pref-width: 125px;
+}
+
+.field {
+    -fx-pref-width: 250px;
+}
+
+.short-field {
+    -fx-pref-width: 150px;
 }
 
 .highlight {

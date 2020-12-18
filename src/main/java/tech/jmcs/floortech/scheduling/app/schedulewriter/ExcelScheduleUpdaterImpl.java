@@ -15,7 +15,7 @@ import java.util.*;
 public class ExcelScheduleUpdaterImpl extends ExcelScheduleUpdater {
     private static final Logger LOG = LoggerFactory.getLogger(ExcelScheduleUpdaterImpl.class);
 
-    // TODO: Move these three static variables to settings.
+    // TODO: Move these three static variables to settings. (some settings created but not linked)
     public static final String SCHEDULING_SHEET_NAME = "Mat. Estim & Data Dump";
     protected static final Integer DATA_NAME_COLUMN = 1;
     protected static final Integer DATA_VALUE_COLUMN = 2;
