@@ -9,7 +9,6 @@ import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.jmcs.floortech.scheduling.app.ExtractedDataToScheduleConverter;
-import tech.jmcs.floortech.scheduling.app.schedulewriter.ExcelScheduleScanner;
 import tech.jmcs.floortech.scheduling.app.settings.SettingsHolder;
 import tech.jmcs.floortech.scheduling.app.settings.SettingsLoader;
 import tech.jmcs.floortech.scheduling.app.settings.SettingsWriter;
@@ -54,11 +53,11 @@ public class DashboardPresenter implements Initializable {
     @Inject private ExtractedDataHolderFX extractedDataHolder;
 
     @FXML private VBox leftPanelVbox; // left panel
-    @FXML private VBox quickLookupVbox;
-    @FXML private VBox extractorsVbox;
-    @FXML private VBox extractButtonVbox;
-    @FXML private VBox dataTargetVbox;
-    @FXML private VBox commitButtonVbox;
+    @FXML private VBox leftVbox1;
+    @FXML private VBox leftVbox2;
+    @FXML private VBox leftVbox3;
+    @FXML private VBox leftVbox4;
+    @FXML private VBox leftVbox5;
     @FXML private AnchorPane rightPanelAnchorPane; // right panel
     @FXML private HBox toolbarHbox; // top right panel (alongside header / title)
 
@@ -87,11 +86,11 @@ public class DashboardPresenter implements Initializable {
 
     private void setupDashboard() {
         settingsButtonView.getViewAsync(this.toolbarHbox.getChildren()::add);
-        quickLookupView.getViewAsync(this.quickLookupVbox.getChildren()::add);
-        extractorsView.getViewAsync(this.extractorsVbox.getChildren()::add);
-        extractButtonView.getViewAsync(this.extractButtonVbox.getChildren()::add);
-        dataTargetView.getViewAsync(this.dataTargetVbox.getChildren()::add);
-        commitButtonView.getViewAsync(this.commitButtonVbox.getChildren()::add);
+        quickLookupView.getViewAsync(this.leftVbox1.getChildren()::add);
+        extractorsView.getViewAsync(this.leftVbox2.getChildren()::add);
+        extractButtonView.getViewAsync(this.leftVbox3.getChildren()::add);
+        dataTargetView.getViewAsync(this.leftVbox4.getChildren()::add);
+        commitButtonView.getViewAsync(this.leftVbox5.getChildren()::add);
         dataFrameView.getViewAsync(this.rightPanelAnchorPane.getChildren()::add);
     }
 
