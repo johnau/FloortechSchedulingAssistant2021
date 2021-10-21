@@ -7,6 +7,7 @@ import tech.jmcs.floortech.scheduling.app.datasource.model.ExtractedTableData;
 import tech.jmcs.floortech.scheduling.app.exception.BeamListDataException;
 import tech.jmcs.floortech.scheduling.app.exception.DataExtractorException;
 import tech.jmcs.floortech.scheduling.app.datasource.model.BeamData;
+import tech.jmcs.floortech.scheduling.app.types.BeamTreatment;
 import tech.jmcs.floortech.scheduling.app.types.DataSourceExtractorType;
 import tech.jmcs.floortech.scheduling.app.util.XLSHelper;
 
@@ -49,10 +50,13 @@ public class BeamListExtractor extends ExcelDataSourceExtractor<BeamData> {
      * @return
      */
     @Override
-    public Boolean isValid() {
+    public Boolean isValid() throws DataExtractorException {
         // check the beam listing xls layout and cell contents for expected layout
 
         Sheet firstSheet = this.getTargetSheet();
+        if (firstSheet == null) {
+            throw new DataExtractorException("The file may be in use!", "Beam List");
+        }
 
         int c = 0;
         List<String> errors = new ArrayList();
@@ -68,12 +72,15 @@ public class BeamListExtractor extends ExcelDataSourceExtractor<BeamData> {
             }
 
             if (!errors.isEmpty()) {
-                // TODO: Finish error collection to display to user
-                return false;
+                StringBuilder sb = new StringBuilder();
+                for (String error : errors) {
+                    sb.append(error);
+                    sb.append("\n");
+                }
+                throw new DataExtractorException(sb.toString(), "Beam List");
             }
             c += 1;
         }
-
         // possibly check the list has contents and not an empty list
 
         return true;
@@ -94,6 +101,9 @@ public class BeamListExtractor extends ExcelDataSourceExtractor<BeamData> {
         ExtractedTableData<BeamData> data = new ExtractedTableData(DataSourceExtractorType.BEAM.getName());
 
         Sheet sheet = this.getTargetSheet();
+        if (sheet == null) {
+            throw new DataExtractorException("The file may be in use!", "Beam List");
+        }
 
         int c = -1;
         String currentBeamGroup = "";
@@ -396,6 +406,11 @@ public class BeamListExtractor extends ExcelDataSourceExtractor<BeamData> {
         beamData.setBeamId(id);
         beamData.setLength(length);
         beamData.setQuantity(qty);
+        if (currentBeamGroup.toUpperCase().contains("T-BAR") || currentBeamGroup.toUpperCase().contains("TBAR") || currentBeamGroup.toUpperCase().contains("ANGLE")) {
+            beamData.setTreatment(BeamTreatment.GALVANISED);
+        } else if (currentBeamGroup.toUpperCase().contains("RHS")) {
+            beamData.setTreatment(BeamTreatment.DURAGALV);
+        }
 
         return beamData;
     }

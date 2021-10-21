@@ -1,17 +1,17 @@
 package tech.jmcs.floortech.scheduling.ui.dataframe;
 
+import javafx.beans.Observable;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.geometry.Pos;
+import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Paint;
 import org.slf4j.Logger;
@@ -19,6 +19,8 @@ import org.slf4j.LoggerFactory;
 import tech.jmcs.floortech.scheduling.app.datasource.model.BeamData;
 import tech.jmcs.floortech.scheduling.app.datasource.model.SlabData;
 import tech.jmcs.floortech.scheduling.app.datasource.model.TrussData;
+import tech.jmcs.floortech.scheduling.app.types.BeamTreatment;
+import tech.jmcs.floortech.scheduling.ui.AutoFillManagerFX;
 import tech.jmcs.floortech.scheduling.ui.ExtractedDataHolderFX;
 import tech.jmcs.floortech.scheduling.ui.dataframe.table.*;
 
@@ -30,8 +32,8 @@ import java.util.stream.Collectors;
 public class DataFramePresenter implements Initializable {
     protected static final Logger LOG = LoggerFactory.getLogger(DataFramePresenter.class);
 
-    @Inject
-    private ExtractedDataHolderFX extractedDataHolder;
+    @Inject private ExtractedDataHolderFX extractedDataHolderFX;
+    @Inject private AutoFillManagerFX autoFillManagerFX;
 
     @FXML
     private AnchorPane mainPagePane;
@@ -67,25 +69,25 @@ public class DataFramePresenter implements Initializable {
     }
 
     private void setupListenerToExtractedData() {
-        this.extractedDataHolder.lastUpdatedProperty().addListener((observable, oldValue, newValue) -> {
+        this.extractedDataHolderFX.lastUpdatedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue.after(oldValue)) {
                 LOG.debug("Updating the data frame view for changed extracted data content");
 
                 this.mainTabPane.getTabs().clear(); // TODO: Implement reuse of tables and tabs to prevent excess memory usage?
 
-                if (this.extractedDataHolder.getBeamDataMap() != null && !this.extractedDataHolder.getBeamDataMap().isEmpty()) {
+                if (this.extractedDataHolderFX.getBeamDataMap() != null && !this.extractedDataHolderFX.getBeamDataMap().isEmpty()) {
                     LOG.debug("Built In Beam Data Present");
                     installBeamDataTable();
                 }
-                if (this.extractedDataHolder.getTrussDataMap() != null && !this.extractedDataHolder.getTrussDataMap().isEmpty()) {
+                if (this.extractedDataHolderFX.getTrussDataMap() != null && !this.extractedDataHolderFX.getTrussDataMap().isEmpty()) {
                     LOG.debug("Built In Truss Data Present");
                     installTrussDataTable();
                 }
-                if (this.extractedDataHolder.getSlabDataMap() != null && !this.extractedDataHolder.getSlabDataMap().isEmpty()) {
+                if (this.extractedDataHolderFX.getSlabDataMap() != null && !this.extractedDataHolderFX.getSlabDataMap().isEmpty()) {
                     LOG.debug("Built In Slab Data Present");
                     installSlabDataTable();
                 }
-                if (this.extractedDataHolder.getCustomData() != null && !this.extractedDataHolder.getCustomData().isEmpty()) {
+                if (this.extractedDataHolderFX.getCustomData() != null && !this.extractedDataHolderFX.getCustomData().isEmpty()) {
                     LOG.debug("Custom Data Present");
                     installCustomDataTables();
                 } else {
@@ -96,7 +98,7 @@ public class DataFramePresenter implements Initializable {
     }
 
     private void installCustomDataTables() {
-        Map<String, Map<Long, Map<String, Object>>> customData = this.extractedDataHolder.getCustomData();
+        Map<String, Map<Long, Map<String, Object>>> customData = this.extractedDataHolderFX.getCustomData();
         // Long is Id, Map<String, Object> is name:value
 
         // iterate each custom data collection
@@ -206,25 +208,72 @@ public class DataFramePresenter implements Initializable {
      */
 
     private void installBeamDataTable() {
-        Map<Long, BeamData> beamData = this.extractedDataHolder.getBeamDataMap();
+        Map<Long, BeamData> beamData = this.extractedDataHolderFX.getBeamDataMap();
 
         List<BeamDataObservable> beamDataList = beamData.entrySet().stream()
                 .map(m -> ObservableDataConverter.convert(m.getValue()))
                 .collect(Collectors.toList());
-        ObservableList<BeamDataObservable> beamDataObservables = FXCollections.observableArrayList();
+
+        ObservableList<BeamDataObservable> beamDataObservables =  FXCollections.observableArrayList(
+                beamData1 -> new Observable[] { beamData1.treatmentProperty() }
+        );
+
         beamDataObservables.addAll(beamDataList);
 
         TableView<BeamDataObservable> beamTable = BuiltInTableFactory.createBeamTable();
         beamTable.setItems(beamDataObservables);
+        beamDataObservables.addListener((ListChangeListener<BeamDataObservable>) c -> {
+            while (c.next()) {
+                LOG.trace("List was changed: added: {} permut: {} rem: {} repl: {} updt: {}", c.wasAdded(), c.wasPermutated(), c.wasRemoved(), c.wasReplaced(), c.wasUpdated());
+                if (c.wasUpdated()) {
+                    this.extractedDataHolderFX.clearBeamDataMap();
+                    for (BeamDataObservable b : c.getList()) {
+                        LOG.trace("In list: {} {} {} {} {}", b.getBeamId(), b.getBeamType(), b.getLength(), b.getQuantity(), b.getTreatment());
+                        // just push all across for now
+                        this.extractedDataHolderFX.addBeamData(b.getBeamId(), b.getBeamType(), b.getLength(), b.getQuantity(), BeamTreatment.valueOf(b.getTreatment()));
+                    }
+                }
+            }
+        });
+
+        HBox toolbar = new HBox();
+        toolbar.setAlignment(Pos.CENTER_RIGHT);
+        toolbar.setStyle("-fx-background-color: #fff;");
+        toolbar.setSpacing(5d);
+        toolbar.setPadding(new Insets(5, 5, 5,5));
+
+        Label l = new Label("Beam Treatment: ");
+
+        ComboBox<String> treatmentsCombo = new ComboBox<>();
+        ObservableList<String> treatmentsList = FXCollections.observableArrayList();
+        for (BeamTreatment value : BeamTreatment.values()) {
+            treatmentsList.add(value.toString());
+        }
+        treatmentsCombo.setItems(treatmentsList);
+
+        Button setAllButton = new Button("Set All");
+        setAllButton.setOnAction(event -> {
+            String value = treatmentsCombo.getValue();
+            if (value == null || value.isEmpty()) {
+                return;
+            }
+            beamTable.getItems().forEach(bd -> {
+                if (!bd.isTreatmentLocked()) {
+                    bd.setTreatment(value);
+                }
+            });
+        });
+
+        toolbar.getChildren().addAll(l, treatmentsCombo, setAllButton);
 
         // add table to the view
-        addTableToView(beamTable, "Beam");
+        addTableToViewWithToolbar(beamTable, "Beam", toolbar);
 
 //        FlowPane editView = BuiltInTableFactory.createBeamTableEditView();
     }
 
     private void installTrussDataTable() {
-        Map<Long, TrussData> trussData = this.extractedDataHolder.getTrussDataMap();
+        Map<Long, TrussData> trussData = this.extractedDataHolderFX.getTrussDataMap();
 
         List<TrussDataObservable> trussDataList = trussData.entrySet().stream()
                 .map(m -> ObservableDataConverter.convert(m.getValue()))
@@ -239,7 +288,7 @@ public class DataFramePresenter implements Initializable {
     }
 
     private void installSlabDataTable() {
-        Map<Long, SlabData> slabData = this .extractedDataHolder.getSlabDataMap();
+        Map<Long, SlabData> slabData = this .extractedDataHolderFX.getSlabDataMap();
 
         List<SlabDataObservable> slabDataList = slabData.entrySet().stream()
                 .map(m -> ObservableDataConverter.convert(m.getValue()))
@@ -259,6 +308,10 @@ public class DataFramePresenter implements Initializable {
      * @param name
      */
     private void addTableToView(TableView table, String name) {
+        addTableToViewWithToolbar(table, name, null);
+    }
+
+    private void addTableToViewWithToolbar(TableView table, String name, Pane toolbar) {
         VBox vbox = new VBox();
         vbox.setFillWidth(true);
         vbox.setPrefWidth(VBox.USE_COMPUTED_SIZE);
@@ -268,11 +321,13 @@ public class DataFramePresenter implements Initializable {
 //        vbox.setMaxWidth();
         vbox.setBackground(new Background(new BackgroundFill(Paint.valueOf("#cccc77"), CornerRadii.EMPTY, Insets.EMPTY)));
 
+        if (toolbar != null) {
+            vbox.getChildren().add(toolbar);
+        }
         vbox.getChildren().add(table);
 
         Tab tab = new Tab();
         tab.setText(name + " Data");
-
         tab.setContent(vbox);
 
         mainTabPane.getTabs().add(tab);

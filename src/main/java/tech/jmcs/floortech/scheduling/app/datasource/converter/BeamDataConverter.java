@@ -77,7 +77,7 @@ public class BeamDataConverter extends DataFormatConverter<BeamData> {
     }
 
     private String generateSchedulingNameString(String bType, BeamTreatment treatment) {
-        String treatmentStr = treatment.getName();
+        String treatmentStr = treatment.getNameForSchedule();
 
         return String.format("%s %s", bType, treatmentStr);
     }

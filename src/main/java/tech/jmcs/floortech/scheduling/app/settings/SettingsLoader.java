@@ -12,18 +12,11 @@ import java.util.*;
 public class SettingsLoader {
     protected static final Logger LOG = LoggerFactory.getLogger(SettingsLoader.class);
 
-    @Inject private SettingsHolder settingsHolder;
-    @Inject private SettingsWriter settingsWriter;
+    private SettingsHolder settingsHolder;
+    private SettingsWriter settingsWriter;
 
-    public SettingsLoader() {
-    }
-
-    /**
-     * Protected Constructor for Testing Purposes
-     * @param settingsHolder
-     */
-    protected SettingsLoader(SettingsHolder settingsHolder, SettingsWriter settingsWriter) {
-        LOG.info("SettingsLoader constructing...");
+    public SettingsLoader(SettingsHolder settingsHolder, SettingsWriter settingsWriter) {
+        LOG.info("SettingsLoader...");
         this.settingsHolder = settingsHolder;
         this.settingsWriter = settingsWriter;
     }
@@ -39,7 +32,7 @@ public class SettingsLoader {
         if (settingsFile.exists() && settingsFile.isFile()) {
             try {
                 settings = this.loadSettings(settingsFile);
-                LOG.debug("Loaded settings from file");
+                LOG.trace("Loaded settings from file");
 
                 // TODO: Check if any settings are present in the defaultsettings.properties file and not in loaded settings (new app version could have new settings) and add them
                 for (Map.Entry<Object, Object> entry : defaultSettings.entrySet()) {
@@ -60,28 +53,32 @@ public class SettingsLoader {
         if (settings == null) {
             settings = defaultSettings;
 
-            LOG.debug("Copied default settings");
+            LOG.info("Using default settings");
 
             writeFile = true;
         }
 
         copySettingsToMemory(settings);
-        LOG.debug("Copied settings to memory");
+        LOG.trace("Copied settings to memory");
 
         if (writeFile) {
-            try {
-                Path filePathWritten = this.settingsWriter.writeSettingsFile();
-                if (filePathWritten == null) {
-                    LOG.debug("Could not write the settings file");
-                } else {
-                    LOG.debug("Wrote the settings file");
-                }
-            } catch (IOException ioex) {
-                LOG.debug("Could not access the settings file to write");
-                throw ioex;
-            }
+            writeSettings();
         }
 
+    }
+
+    private void writeSettings() throws IOException {
+        try {
+            Path filePathWritten = this.settingsWriter.writeSettingsFile();
+            if (filePathWritten == null) {
+                LOG.debug("Could not write the settings file");
+            } else {
+                LOG.debug("Wrote the settings file");
+            }
+        } catch (IOException ioex) {
+            LOG.debug("Could not access the settings file to write");
+            throw ioex;
+        }
     }
 
     private void copySettingsToMemory(Properties settings) {
@@ -95,10 +92,16 @@ public class SettingsLoader {
                 return;
             }
             settings.load(is);
-            LOG.debug("Loaded default settings");
+            LOG.trace("Loaded default settings");
         } catch (IOException e) {
             LOG.warn("Could not read settings forom resource folder");
         }
+    }
+
+    public void loadDefaultSettingsToMemory() {
+        Properties p = new Properties();
+        copyDefaultSettings(p);
+        copySettingsToMemory(p);
     }
 
     public Properties getSettingsFromMemory() {
@@ -122,7 +125,7 @@ public class SettingsLoader {
 
         settings.forEach((s, v) -> {
 
-            LOG.debug("Setting found {}={}", s, v);
+            LOG.trace("Setting found {}={}", s, v);
 
         });
 

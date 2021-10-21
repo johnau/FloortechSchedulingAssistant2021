@@ -30,12 +30,16 @@ public enum BalconyType {
                 return t;
             }
 
-            String n1 = name.toUpperCase().trim().replaceAll(" +", "");
-            String n2 = t.getName().toUpperCase().trim().replaceAll(" +", "");
+            String n1 = cleanUpSpaces(name.toUpperCase());
+            String n2 = cleanUpSpaces(t.getName().toUpperCase());
             if (n1.equals(n2)) {
                 return t;
             }
         }
         return null;
+    }
+
+    private static String cleanUpSpaces(String s) {
+        return s.trim().replaceAll("[\\s]+", " ");
     }
 }

@@ -19,6 +19,8 @@ public class BeamData {
 
     private BeamTreatment treatment = BeamTreatment.BLACK;
 
+    private boolean treatmentLocked = false;
+
     public BeamData() {
     }
 
@@ -65,5 +67,13 @@ public class BeamData {
 
     public void setTreatment(BeamTreatment treatment) {
         this.treatment = treatment;
+    }
+
+    public boolean isTreatmentLocked() {
+        return treatmentLocked;
+    }
+
+    public void setTreatmentLocked(boolean treatmentLocked) {
+        this.treatmentLocked = treatmentLocked;
     }
 }

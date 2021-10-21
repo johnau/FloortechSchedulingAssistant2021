@@ -56,7 +56,12 @@ class GenericExcelHorizontalTableDataExtractorTest {
             return;
         }
 
-        Boolean isValid = extractor.isValid();
+        Boolean isValid = null;
+        try {
+            isValid = extractor.isValid();
+        } catch (DataExtractorException e) {
+            e.printStackTrace();
+        }
         System.out.printf("Generic table is valid: %s", isValid);
     }
 

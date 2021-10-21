@@ -47,4 +47,26 @@ public class ExcelCellAddress implements Serializable {
     public String toString() {
         return this.col+", "+this.row;
     }
+
+    public static ExcelCellAddress fromString(String s) throws Exception {
+
+        String[] parts = s.split(",");
+        if (parts.length > 2) {
+            throw new Exception("Bad formatted string");
+        }
+
+        String _col = parts[0].trim();
+        String _row = parts[1].trim();
+
+        int col = 0;
+        int row = 0;
+        try {
+            col = Integer.parseInt(_col);
+            row = Integer.parseInt(_row);
+            ExcelCellAddress eca = new ExcelCellAddress(col, row);
+            return eca;
+        } catch (NumberFormatException nex) {
+            throw new Exception("Bad formatted string");
+        }
+    }
 }

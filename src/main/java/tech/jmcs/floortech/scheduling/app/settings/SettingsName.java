@@ -24,6 +24,8 @@ public enum SettingsName {
 
     SCHEDULE_ENTRY_CW260_TRUSS ("schedule_entry_cw260_truss"),
     SCHEDULE_ENTRY_CW346_TRUSS ("schedule_entry_cw346_truss"),
+    SCHEDULE_ENTRY_HJ200_TRUSS_COUNT ("schedule_entry_hj200_truss_count"),
+    SCHEDULE_ENTRY_HJ300_TRUSS_COUNT ("schedule_entry_hj300_truss_count"),
     SCHEDULE_ENTRY_HJ200_TRUSS ("schedule_entry_hj200_truss"),
     SCHEDULE_ENTRY_HJ300_TRUSS ("schedule_entry_hj300_truss"),
     SCHEDULE_ENTRY_STANDARD_EC_CW260 ("schedule_entry_standard_endcaps_cw260"),
@@ -37,6 +39,8 @@ public enum SettingsName {
     SCHEDULE_ENTRY_TRUSS_AIRCON_PENO_CW260 ("schedule_entry_truss_air_con_peno_cw260"),
     SCHEDULE_ENTRY_TRUSS_AIRCON_PENO_CW346 ("schedule_entry_truss_air_con_peno_cw346"),
     SCHEDULE_ENTRY_TRUSS_AIRCON_PENO_HJ300 ("schedule_entry_truss_air_con_peno_hj300"),
+    SCHEDULE_ENTRY_TRUSS_ADJUSTABLE_NEC_CW260 ("schedule_entry_adjustable_endcaps_cw260"),
+    SCHEDULE_ENTRY_TRUSS_ADJUSTABLE_NEC_CW346 ("schedule_entry_adjustable_endcaps_cw346"),
 
     SCHEDULE_ENTRY_STEEL_BLACK_KEYWORD ("schedule_entry_steel_black_keyword"),
     SCHEDULE_ENTRY_STEEL_GALVANISED_KEYWORD ("schedule_entry_steel_galvanised_keyword"),
@@ -51,7 +55,8 @@ public enum SettingsName {
     SCHEDULE_ENTRY_SLAB_3C_INSITU ("schedule_entry_slab_3c_insitu"),
     SCHEDULE_ENTRY_SLAB_4C_INSITU ("schedule_entry_slab_4c_insitu"),
     SCHEDULE_ENTRY_SLAB_THICK_ANGLE ("schedule_entry_slab_thick_angle"),
-    SCHEDULE_ENTRY_SLAB_THIN_ANGLE ("schedule_entry_slab_thin_angle");
+    SCHEDULE_ENTRY_SLAB_THIN_ANGLE ("schedule_entry_slab_thin_angle"),
+    SCHEDULE_ENTRY_SHEET_SUFFIX("schedule_entry_sheet_suffix");
 
     private final String settingsFilePropertyName;
 

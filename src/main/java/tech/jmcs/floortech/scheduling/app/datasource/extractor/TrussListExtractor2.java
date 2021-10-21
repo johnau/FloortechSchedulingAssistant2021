@@ -7,8 +7,9 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 /**
- * Support for the newly added 'Truss Packing Group' column
+ * Support for the newly added 'Truss Packing Group' column - Not required? Not using this class for now - marking deprecated
  */
+@Deprecated
 public class TrussListExtractor2 extends TrussListExtractor {
     private static final Logger LOG = LoggerFactory.getLogger(TrussListExtractor2.class);
 

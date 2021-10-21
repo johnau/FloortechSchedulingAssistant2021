@@ -36,7 +36,7 @@ public class SlabListExtractor extends PdfTextDataSourceExtractor<SlabData> {
     }
 
     @Override
-    public Boolean isValid() {
+    public Boolean isValid() throws DataExtractorException {
         Matcher floorAreaMatcher = FLOOR_AREA_PATTERN.matcher(this.pdfText);
 //        Matcher balconyAreasMatcher = BALCONY_AREAS_PATTERN.matcher(this.pdfText);
         Matcher thickAngleMatcher = THICK_ANGLE_PATTERN.matcher(this.pdfText);
@@ -49,14 +49,15 @@ public class SlabListExtractor extends PdfTextDataSourceExtractor<SlabData> {
         if (foundFloorArea && foundThickAngle && foundThinAngle) {
             return true;
         }
-        return false;
+        throw new DataExtractorException(String.format("Did not look like a source of slab data; found floor area: %s, found thick angle: %s, found thin angle: %s", foundFloorArea, foundThickAngle, foundThinAngle),
+                "Slab Data (Job PDF File)");
     }
 
     @Override
     public void extract() throws DataExtractorException {
-        if (!isValid()) {
-            LOG.warn("The PDF file was not valid for Slab Data.");
-            throw new SlabDataException("The PDF is not valid for Slab data");
+        if (!isValid()) { // throw exception
+            LOG.warn("The PDF file was not valid for Slab Data."); // never run
+            throw new SlabDataException("The PDF is not valid for Slab data"); // never run
         }
 
         ExtractedTableData<SlabData> tableData = new ExtractedTableData<>(DataSourceExtractorType.SLAB.getName());

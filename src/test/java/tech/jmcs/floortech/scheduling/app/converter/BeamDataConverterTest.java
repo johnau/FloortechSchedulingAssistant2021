@@ -6,6 +6,7 @@ import tech.jmcs.floortech.scheduling.app.datasource.converter.BeamDataConverter
 import tech.jmcs.floortech.scheduling.app.datasource.model.BeamData;
 import tech.jmcs.floortech.scheduling.app.datasource.model.ExtractedTableData;
 import tech.jmcs.floortech.scheduling.app.types.BeamTreatment;
+import tech.jmcs.floortech.scheduling.app.types.DataSourceExtractorType;
 
 import java.util.Map;
 
@@ -17,7 +18,7 @@ class BeamDataConverterTest {
     void testConvertBeamData() {
         BeamDataConverter converter = new BeamDataConverter();
 
-        ExtractedTableData<BeamData> mockData = new ExtractedTableData<>("BEAM LISTING");
+        ExtractedTableData<BeamData> mockData = new ExtractedTableData<>(DataSourceExtractorType.BEAM.getName());
 
         BeamData mockBeam1 = new BeamData("250 UB 26");
         mockBeam1.setBeamId("B01");

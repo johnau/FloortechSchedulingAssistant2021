@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 import tech.jmcs.floortech.scheduling.app.settings.SettingsHolder;
 import tech.jmcs.floortech.scheduling.app.types.FileType;
 import tech.jmcs.floortech.scheduling.app.util.PathUtilities;
+import tech.jmcs.floortech.scheduling.ui.AutoFillManagerFX;
+import tech.jmcs.floortech.scheduling.ui.ExtractedDataHolderFX;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -21,6 +23,8 @@ public class DataTargetPresenter implements Initializable {
     protected static final Logger LOG = LoggerFactory.getLogger(DataTargetPresenter.class);
 
     @Inject private SettingsHolder settingsHolder;
+    @Inject AutoFillManagerFX autoFillManagerFX;
+    @Inject ExtractedDataHolderFX extractedDataHolderFX;
 
     @FXML private TextField schedulingFilePathTextField;
 
@@ -29,6 +33,10 @@ public class DataTargetPresenter implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         LOG.info("DataTargetPresenter initializing...");
+        LOG.trace("Setting data target path string property '{}'", this.schedulingFilePathTextField.textProperty());
+//        this.autoFillManagerFX.setDataTargetPath(this.schedulingFilePathTextField.textProperty());
+        extractedDataHolderFX.setDataTarget(this.schedulingFilePathTextField.textProperty());
+        this.schedulingFilePathTextField.textProperty().bindBidirectional(this.autoFillManagerFX.getDataTargetPathProperty());
     }
 
     @FXML

@@ -1,13 +1,18 @@
 package tech.jmcs.floortech.scheduling.app.schedulewriter;
 
+import org.apache.poi.ss.format.CellFormatter;
 import org.apache.poi.ss.usermodel.*;
 import tech.jmcs.floortech.scheduling.app.util.ExcelCellAddress;
 import tech.jmcs.floortech.scheduling.app.util.ExcelHelper;
 import tech.jmcs.floortech.scheduling.app.util.XLSHelper;
 
-public class ExcelScheduleUpdateConfirmerImpl extends ExcelScheduleUpdateConfirmer {
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
-    protected ExcelScheduleUpdateConfirmerImpl(ExcelScheduleUpdater updater) {
+public class BasicExcelScheduleUpdateConfirmer extends ExcelScheduleUpdateConfirmer {
+
+    protected BasicExcelScheduleUpdateConfirmer(ExcelScheduleUpdater updater) {
         super(updater);
     }
 
@@ -116,13 +121,32 @@ public class ExcelScheduleUpdateConfirmerImpl extends ExcelScheduleUpdateConfirm
 
         dataNameCell.setCellValue(name.toUpperCase());
 
-        if (value.getClass().equals(Double.class)) {
+        if (value instanceof Double || value instanceof Integer || value instanceof Long) {
             dataValueCell.setCellValue((Double) value);
-        } else if (value.getClass().equals(String.class)) {
+        } else if (value instanceof String) {
             dataValueCell.setCellValue((String) value);
         } else {
             LOG.debug("Type not handled!");
         }
+
+    }
+
+    @Override
+    public List<String> getAllScheduleEntryNames() {
+        Iterator<Row> it = this.updater.getTargetSheet().rowIterator();
+        List<String> entryNames = new ArrayList<>();
+        while (it.hasNext()) {
+            Row r = it.next();
+            Integer rowNum = r.getRowNum();
+            Integer colNum = this.updater.getDataNameColumn();
+            ExcelCellAddress eca = new ExcelCellAddress(colNum, rowNum);
+
+            Cell c = r.getCell(colNum);
+            DataFormatter df = new DataFormatter();
+            String s = df.formatCellValue(c);
+            entryNames.add(String.format("%s | %s", eca.toString(), s));
+        }
+        return entryNames;
     }
 
     protected Sheet getTargetSheet() {

@@ -16,12 +16,12 @@
          <content>
             <VBox styleClass="small-padded">
                <children>
-                  <HBox>
+                  <HBox fillHeight="false" maxWidth="1.7976931348623157E308" prefWidth="600.0" VBox.vgrow="NEVER">
                      <children>
-                        <Label styleClass="field-label" text="Detailing Job Folder:" />
-                        <TextField fx:id="detailingFolderPathTextfield" promptText="eg. C:\..\19000" styleClass="field" />
-                        <Button mnemonicParsing="false" onAction="#handleBrowseJobFolderButtonAction" text="Change..." />
-                        <Button mnemonicParsing="false" styleClass="bold-text" text="Auto-Fill" />
+                        <Label minWidth="120.0" prefWidth="150.0" styleClass="field-label" text="Detailing Job Folder:" HBox.hgrow="NEVER" />
+                        <TextField fx:id="detailingFolderPathTextfield" maxWidth="1.7976931348623157E308" promptText="eg. C:\..\19000" styleClass="field" HBox.hgrow="ALWAYS" />
+                        <Button mnemonicParsing="false" onAction="#handleBrowseJobFolderButtonAction" text="Change..." HBox.hgrow="NEVER" />
+                        <Button mnemonicParsing="false" onAction="#handleAutoFillAction" styleClass="bold-text" text="Auto-Fill" HBox.hgrow="NEVER" />
                      </children>
                      <styleClass>
                         <String fx:value="row-container" />

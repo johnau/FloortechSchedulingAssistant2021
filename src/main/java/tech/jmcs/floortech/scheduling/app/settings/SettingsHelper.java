@@ -1,5 +1,8 @@
 package tech.jmcs.floortech.scheduling.app.settings;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.FileNotFoundException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -9,7 +12,7 @@ import java.util.List;
 import java.util.Properties;
 
 public class SettingsHelper {
-
+    protected static final Logger LOG = LoggerFactory.getLogger(SettingsHelper.class);
     public static Properties settingsToPropertiesObject(SettingsHolder settingsHolder) {
         Properties properties = new Properties();
 
@@ -36,6 +39,8 @@ public class SettingsHelper {
 
         String scheduleEntryCw260Truss = settingsHolder.getScheduleEntryCw260Truss();
         String scheduleEntryCw346Truss = settingsHolder.getScheduleEntryCw346Truss();
+        String scheduleEntryHj200TrussCount = settingsHolder.getScheduleEntryHj200TrussCount();
+        String scheduleEntryHj300TrussCount = settingsHolder.getScheduleEntryHj300TrussCount();
         String scheduleEntryHj200Truss = settingsHolder.getScheduleEntryHj200Truss();
         String scheduleEntryHj300Truss = settingsHolder.getScheduleEntryHj300Truss();
         String scheduleEntryConnectionEndcapsCw260 = settingsHolder.getScheduleEntryConnectionEndcapsCw260();
@@ -49,6 +54,9 @@ public class SettingsHelper {
         String scheduleEntryTrussAirConPenoCw260 = settingsHolder.getScheduleEntryTrussAirConPenoCw260();
         String scheduleEntryTrussAirConPenoCw346 = settingsHolder.getScheduleEntryTrussAirConPenoCw346();
         String scheduleEntryTrussAirConPenoHj300 = settingsHolder.getScheduleEntryTrussAirConPenoHj300();
+        String scheduleEntryAdjustableEndcapsCw260 = settingsHolder.getScheduleEntryAdjustableEndcapsCw260();
+        String scheduleEntryAdjustableEndcapsCw346 = settingsHolder.getScheduleEntryAdjustableEndcapsCw346();
+
         String scheduleEntrySteelBlackKeyword = settingsHolder.getScheduleEntrySteelBlackKeyword();
         String scheduleEntrySteelGalvanisedKeyword = settingsHolder.getScheduleEntrySteelGalvanisedKeyword();
         String scheduleEntrySteelDimetKeyword = settingsHolder.getScheduleEntrySteelDimetKeyword();
@@ -62,6 +70,8 @@ public class SettingsHelper {
         String scheduleEntrySlab4cInsitu = settingsHolder.getScheduleEntrySlab4cInsitu();
         String scheduleEntrySlabThickAngle = settingsHolder.getScheduleEntrySlabThickAngle();
         String scheduleEntrySlabThinAngle = settingsHolder.getScheduleEntrySlabThinAngle();
+
+        String scheduleEntrySheetSuffix = settingsHolder.getScheduleEntrySheetSuffix();
 
         properties.setProperty(SettingsName.JOB_FILES_SCHEDULING_PATH.getSettingsFilePropertyName(), jobFilesSchedulingRootPath == null ? "" : jobFilesSchedulingRootPath.toString());
         properties.setProperty(SettingsName.JOB_FOLDERS_DETAILING_PATH.getSettingsFilePropertyName(), jobFoldersDetailingRootPath == null ? "" : jobFoldersDetailingRootPath.toString());
@@ -86,6 +96,8 @@ public class SettingsHelper {
 
         properties.setProperty(SettingsName.SCHEDULE_ENTRY_CW260_TRUSS.getSettingsFilePropertyName(), scheduleEntryCw260Truss == null ? "" : scheduleEntryCw260Truss);
         properties.setProperty(SettingsName.SCHEDULE_ENTRY_CW346_TRUSS.getSettingsFilePropertyName(), scheduleEntryCw346Truss == null ? "" : scheduleEntryCw346Truss);
+        properties.setProperty(SettingsName.SCHEDULE_ENTRY_HJ200_TRUSS_COUNT.getSettingsFilePropertyName(), scheduleEntryHj200TrussCount == null ? "" : scheduleEntryHj200TrussCount);
+        properties.setProperty(SettingsName.SCHEDULE_ENTRY_HJ300_TRUSS_COUNT.getSettingsFilePropertyName(), scheduleEntryHj300TrussCount == null ? "" : scheduleEntryHj300TrussCount);
         properties.setProperty(SettingsName.SCHEDULE_ENTRY_HJ200_TRUSS.getSettingsFilePropertyName(), scheduleEntryHj200Truss == null ? "" : scheduleEntryHj200Truss);
         properties.setProperty(SettingsName.SCHEDULE_ENTRY_HJ300_TRUSS.getSettingsFilePropertyName(), scheduleEntryHj300Truss == null ? "" : scheduleEntryHj300Truss);
         properties.setProperty(SettingsName.SCHEDULE_ENTRY_CONNECTION_EC_CW260.getSettingsFilePropertyName(), scheduleEntryConnectionEndcapsCw260 == null ? "" : scheduleEntryConnectionEndcapsCw260);
@@ -99,6 +111,9 @@ public class SettingsHelper {
         properties.setProperty(SettingsName.SCHEDULE_ENTRY_TRUSS_AIRCON_PENO_CW260.getSettingsFilePropertyName(), scheduleEntryTrussAirConPenoCw260 == null ? "" : scheduleEntryTrussAirConPenoCw260);
         properties.setProperty(SettingsName.SCHEDULE_ENTRY_TRUSS_AIRCON_PENO_CW346.getSettingsFilePropertyName(), scheduleEntryTrussAirConPenoCw346 == null ? "" : scheduleEntryTrussAirConPenoCw346);
         properties.setProperty(SettingsName.SCHEDULE_ENTRY_TRUSS_AIRCON_PENO_HJ300.getSettingsFilePropertyName(), scheduleEntryTrussAirConPenoHj300 == null ? "" : scheduleEntryTrussAirConPenoHj300);
+        properties.setProperty(SettingsName.SCHEDULE_ENTRY_TRUSS_ADJUSTABLE_NEC_CW260.getSettingsFilePropertyName(), scheduleEntryAdjustableEndcapsCw260 == null ? "" : scheduleEntryAdjustableEndcapsCw260);
+        properties.setProperty(SettingsName.SCHEDULE_ENTRY_TRUSS_ADJUSTABLE_NEC_CW346.getSettingsFilePropertyName(), scheduleEntryAdjustableEndcapsCw346 == null ? "" : scheduleEntryAdjustableEndcapsCw346);
+
         properties.setProperty(SettingsName.SCHEDULE_ENTRY_STEEL_BLACK_KEYWORD.getSettingsFilePropertyName(), scheduleEntrySteelBlackKeyword == null ? "" : scheduleEntrySteelBlackKeyword);
         properties.setProperty(SettingsName.SCHEDULE_ENTRY_STEEL_GALVANISED_KEYWORD.getSettingsFilePropertyName(), scheduleEntrySteelGalvanisedKeyword == null ? "" : scheduleEntrySteelGalvanisedKeyword);
         properties.setProperty(SettingsName.SCHEDULE_ENTRY_STEEL_DIMET_KEYWORD.getSettingsFilePropertyName(), scheduleEntrySteelDimetKeyword == null ? "" : scheduleEntrySteelDimetKeyword);
@@ -112,6 +127,8 @@ public class SettingsHelper {
         properties.setProperty(SettingsName.SCHEDULE_ENTRY_SLAB_4C_INSITU.getSettingsFilePropertyName(), scheduleEntrySlab4cInsitu == null ? "" : scheduleEntrySlab4cInsitu);
         properties.setProperty(SettingsName.SCHEDULE_ENTRY_SLAB_THICK_ANGLE.getSettingsFilePropertyName(), scheduleEntrySlabThickAngle == null ? "" : scheduleEntrySlabThickAngle);
         properties.setProperty(SettingsName.SCHEDULE_ENTRY_SLAB_THIN_ANGLE.getSettingsFilePropertyName(), scheduleEntrySlabThinAngle == null ? "" : scheduleEntrySlabThinAngle);
+
+        properties.setProperty(SettingsName.SCHEDULE_ENTRY_SHEET_SUFFIX.getSettingsFilePropertyName(), scheduleEntrySheetSuffix == null ? "" : scheduleEntrySheetSuffix);
 
         return properties;
     }
@@ -157,6 +174,8 @@ public class SettingsHelper {
 
         String scheduleEntryCw260Truss = properties.getProperty(SettingsName.SCHEDULE_ENTRY_CW260_TRUSS.getSettingsFilePropertyName());
         String scheduleEntryCw346Truss = properties.getProperty(SettingsName.SCHEDULE_ENTRY_CW346_TRUSS.getSettingsFilePropertyName());
+        String scheduleEntryHj200TrussCount = properties.getProperty(SettingsName.SCHEDULE_ENTRY_HJ200_TRUSS_COUNT.getSettingsFilePropertyName());
+        String scheduleEntryHj300TrussCount = properties.getProperty(SettingsName.SCHEDULE_ENTRY_HJ300_TRUSS_COUNT.getSettingsFilePropertyName());
         String scheduleEntryHj200Truss = properties.getProperty(SettingsName.SCHEDULE_ENTRY_HJ200_TRUSS.getSettingsFilePropertyName());
         String scheduleEntryHj300Truss = properties.getProperty(SettingsName.SCHEDULE_ENTRY_HJ300_TRUSS.getSettingsFilePropertyName());
         String scheduleEntryConnectionEndcapsCw260 = properties.getProperty(SettingsName.SCHEDULE_ENTRY_CONNECTION_EC_CW260.getSettingsFilePropertyName());
@@ -170,6 +189,9 @@ public class SettingsHelper {
         String scheduleEntryTrussAirConPenoCw260 = properties.getProperty(SettingsName.SCHEDULE_ENTRY_TRUSS_AIRCON_PENO_CW260.getSettingsFilePropertyName());
         String scheduleEntryTrussAirConPenoCw346 = properties.getProperty(SettingsName.SCHEDULE_ENTRY_TRUSS_AIRCON_PENO_CW346.getSettingsFilePropertyName());
         String scheduleEntryTrussAirConPenoHj300 = properties.getProperty(SettingsName.SCHEDULE_ENTRY_TRUSS_AIRCON_PENO_HJ300.getSettingsFilePropertyName());
+        String scheduleEntryAdjustableEndcapsCw260 = properties.getProperty(SettingsName.SCHEDULE_ENTRY_TRUSS_ADJUSTABLE_NEC_CW260.getSettingsFilePropertyName());
+        String scheduleEntryAdjustableEndcapsCw346 = properties.getProperty(SettingsName.SCHEDULE_ENTRY_TRUSS_ADJUSTABLE_NEC_CW346.getSettingsFilePropertyName());
+
         String scheduleEntrySteelBlackKeyword = properties.getProperty(SettingsName.SCHEDULE_ENTRY_STEEL_BLACK_KEYWORD.getSettingsFilePropertyName());
         String scheduleEntrySteelGalvanisedKeyword = properties.getProperty(SettingsName.SCHEDULE_ENTRY_STEEL_GALVANISED_KEYWORD.getSettingsFilePropertyName());
         String scheduleEntrySteelDimetKeyword = properties.getProperty(SettingsName.SCHEDULE_ENTRY_STEEL_DIMET_KEYWORD.getSettingsFilePropertyName());
@@ -184,6 +206,8 @@ public class SettingsHelper {
         String scheduleEntrySlabThickAngle = properties.getProperty(SettingsName.SCHEDULE_ENTRY_SLAB_THICK_ANGLE.getSettingsFilePropertyName());
         String scheduleEntrySlabThinAngle = properties.getProperty(SettingsName.SCHEDULE_ENTRY_SLAB_THIN_ANGLE.getSettingsFilePropertyName());
 
+        String scheduleEntrySheetSuffix = properties.getProperty(SettingsName.SCHEDULE_ENTRY_SHEET_SUFFIX.getSettingsFilePropertyName());
+
         // set to settings holder
         settingsHolder.setBuiltInBeamExtractorEnabled(builtInBeamExtractorEnabled);
         settingsHolder.setBeamScheduleSectionName(beamScheduleSectionName);
@@ -195,6 +219,7 @@ public class SettingsHelper {
         settingsHolder.setTrussScheduleSectionName(trussScheduleSectionName);
         try {
             settingsHolder.setJobFilesSchedulingRootPath(jobFilesSchedulingPath);
+            LOG.debug("The path was not set because it does not exist: {}", jobFilesSchedulingPath);
         } catch (FileNotFoundException e) {
             // silently fail to set paths that dont exist
         }
@@ -202,6 +227,7 @@ public class SettingsHelper {
             settingsHolder.setJobFoldersDetailingRootPath(jobFoldersDetailingPath);
         } catch (FileNotFoundException e) {
             // silently fail to set paths that dont exist
+            LOG.debug("The path was not set because it does not exist: {}", jobFoldersDetailingPath);
         }
         settingsHolder.setExcelScheduleFileSections(scheduleSections);
         settingsHolder.setExcelScheduleSheetName(scheduleSheetName);
@@ -214,6 +240,8 @@ public class SettingsHelper {
 
         settingsHolder.setScheduleEntryCw260Truss(scheduleEntryCw260Truss);
         settingsHolder.setScheduleEntryCw346Truss(scheduleEntryCw346Truss);
+        settingsHolder.setScheduleEntryHj200TrussCount(scheduleEntryHj200TrussCount);
+        settingsHolder.setScheduleEntryHj300TrussCount(scheduleEntryHj300TrussCount);
         settingsHolder.setScheduleEntryHj200Truss(scheduleEntryHj200Truss);
         settingsHolder.setScheduleEntryHj300Truss(scheduleEntryHj300Truss);
         settingsHolder.setScheduleEntryConnectionEndcapsCw260(scheduleEntryConnectionEndcapsCw260);
@@ -227,6 +255,8 @@ public class SettingsHelper {
         settingsHolder.setScheduleEntryTrussAirConPenoCw260(scheduleEntryTrussAirConPenoCw260);
         settingsHolder.setScheduleEntryTrussAirConPenoCw346(scheduleEntryTrussAirConPenoCw346);
         settingsHolder.setScheduleEntryTrussAirConPenoHj300(scheduleEntryTrussAirConPenoHj300);
+        settingsHolder.setScheduleEntryAdjustableEndcapsCw260(scheduleEntryAdjustableEndcapsCw260);
+        settingsHolder.setScheduleEntryAdjustableEndcapsCw346(scheduleEntryAdjustableEndcapsCw346);
 
         settingsHolder.setScheduleEntrySlabInternal(scheduleEntrySlabInternal);
         settingsHolder.setScheduleEntrySlab2cRhs(scheduleEntrySlab2cRhs);
@@ -243,5 +273,6 @@ public class SettingsHelper {
         settingsHolder.setScheduleEntrySteelEpoxyKeyword(scheduleEntrySteelEpoxyKeyword);
         settingsHolder.setScheduleEntrySteelDuragalKeyword(scheduleEntrySteelDuragalKeyword);
 
+        settingsHolder.setScheduleEntrySheetSuffix(scheduleEntrySheetSuffix);
     }
 }

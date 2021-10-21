@@ -11,9 +11,10 @@ import tech.jmcs.floortech.scheduling.app.util.XLSUtility;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.regex.Pattern;
 
-public class ExcelScheduleUpdaterImpl extends ExcelScheduleUpdater {
-    private static final Logger LOG = LoggerFactory.getLogger(ExcelScheduleUpdaterImpl.class);
+public class BasicExcelScheduleUpdater extends ExcelScheduleUpdater {
+    private static final Logger LOG = LoggerFactory.getLogger(BasicExcelScheduleUpdater.class);
 
     // TODO: Move these three static variables to settings. (some settings created but not linked)
     public static final String SCHEDULING_SHEET_NAME = "Mat. Estim & Data Dump";
@@ -32,7 +33,7 @@ public class ExcelScheduleUpdaterImpl extends ExcelScheduleUpdater {
 
     protected XLSUtility xls;
 
-     public ExcelScheduleUpdaterImpl(Path excelSchedulePath) throws IOException, ExcelScheduleWriterException {
+     public BasicExcelScheduleUpdater(Path excelSchedulePath) throws IOException, ExcelScheduleWriterException {
         if (excelSchedulePath == null || excelSchedulePath.toString().isEmpty()) {
             LOG.error("Could not create Excel Scheduling File Updater without a file path");
             throw new ExcelScheduleWriterException("Could not create Excel Scheduling File Updater without a file path");
@@ -96,7 +97,7 @@ public class ExcelScheduleUpdaterImpl extends ExcelScheduleUpdater {
      */
     @Override
     public ExcelScheduleUpdateConfirmer updateSchedule(Map<String, Object> values) throws ExcelScheduleWriterException {
-        ExcelScheduleUpdateConfirmer confirmer = new ExcelScheduleUpdateConfirmerImpl(this);
+        ExcelScheduleUpdateConfirmer confirmer = new BasicExcelScheduleUpdateConfirmer(this);
 
         if (!this.isValid()) {
             LOG.warn("Schedule was not a valid format");
@@ -108,10 +109,12 @@ public class ExcelScheduleUpdaterImpl extends ExcelScheduleUpdater {
         DataFormatter dataFormatter = new DataFormatter();
 
         LOG.debug("Loading sheet: {}", targetSheetNumber);
+        // TODO: Search for target sheet based on setting value for target sheet.
         try {
             if (this.targetSheet == null) this.targetSheet = this.xls.getSheet(targetSheetNumber, true);
             values.forEach( (name, value) -> {
                 String result = updateCellWithValue(name, value, this.targetSheet, dataFormatter);
+                LOG.debug("Result from cell update is: {} (for name: {} | value : {}", result, name, value);
                 switch (result) {
                     case OK: //ok
                         break;
@@ -119,7 +122,29 @@ public class ExcelScheduleUpdaterImpl extends ExcelScheduleUpdater {
                         confirmer.addNotFoundProblem(name, value); // store data name and value
                         break;
                     default:
-                        confirmer.addConflictProblem(name, result); // currently stores data name and value, should store data name and already present value(??)
+                        if (value instanceof Double || value instanceof Long || value instanceof Integer) {
+                            Double vd = (double)Math.round((double)value * 1000d) / 1000d; // TODO: This needs to be improved as not every item may be a conversion from mm to m, for now enforce this, though
+                            Double ed = 0d;
+                            if (Pattern.matches("^[0-9.]+$", result) == true) {
+                                try {
+                                    ed = Double.parseDouble(result);
+                                } catch (NumberFormatException nex) {}
+                                LOG.trace("VD: {}, ED: {}", vd, ed);
+                                if (!vd.equals(ed)) { // check that the values are not the same, no point reporting a conflict
+                                    confirmer.addConflictProblem(name, result, value); // currently stores data name and value, should store data name and already present value(??)
+                                }
+                            } else {
+                                confirmer.addConflictProblem(name, result, value); // currently stores data name and value, should store data name and already present value(??)
+                            }
+                        } else if (value instanceof String) {
+                            LOG.trace("value {} existing: {}", value, result);
+                            if (!result.equalsIgnoreCase((String) value)) {
+                                confirmer.addConflictProblem(name, result, value); // currently stores data name and value, should store data name and already present value(??)
+                            }
+                        } else {
+                            LOG.warn("Unhandled type: {}", value.getClass().getSimpleName());
+                        }
+
                         break;
                 }
             });
@@ -135,6 +160,10 @@ public class ExcelScheduleUpdaterImpl extends ExcelScheduleUpdater {
         }
         LOG.debug("Some issues to fix with update, returning a confirmer");
         return confirmer;
+    }
+
+    public boolean fileAccessible() {
+        return this.xls.fileAccessible();
     }
 
     /**
@@ -215,6 +244,7 @@ public class ExcelScheduleUpdaterImpl extends ExcelScheduleUpdater {
      * @return Returns OK if OK, NAME_NOT_FOUND if could not find name, Cellvalue as string if value cell was not empty
      */
     protected String updateCellWithValue(String name, Object value, Sheet schSheet, DataFormatter dataFormatter) {
+//        LOG.info("Placing value for {} = {}", name, value);
         // find target address
         ExcelCellAddress itemNameAddress = XLSHelper.findCellByName(schSheet, DATA_NAME_COLUMN, name, dataFormatter);
         if (itemNameAddress == null) {

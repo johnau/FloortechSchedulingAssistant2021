@@ -114,6 +114,7 @@ public class XLSUtility {
     public void saveAndClose() throws FileNotFoundException, IOException {
         if (this.workbook != null) {
             try (FileOutputStream fos = new FileOutputStream(this.excelFile.toFile())) {
+                this.workbook.setForceFormulaRecalculation(true);
                 this.workbook.write(fos);
                 this.closeFile();
             } catch (FileNotFoundException e) {
@@ -142,6 +143,21 @@ public class XLSUtility {
     private boolean fileExists(Path excelFile) {
         File f = excelFile.toFile();
         return f.exists();
+    }
+
+    public boolean fileAccessible() {
+        File f = this.excelFile.toFile();
+        if (!f.exists()) {
+            return false;
+        }
+
+        try {
+            Workbook w = WorkbookFactory.create(f);
+            w.close();
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
     }
 
     @Deprecated

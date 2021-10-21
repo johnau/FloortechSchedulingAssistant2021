@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.jmcs.floortech.scheduling.app.datasource.model.TrussData;
 import tech.jmcs.floortech.scheduling.app.types.DataSourceExtractorType;
-import tech.jmcs.floortech.scheduling.app.types.EndCapCW260;
+import tech.jmcs.floortech.scheduling.app.types.TrussEndCap;
 import tech.jmcs.floortech.scheduling.app.exception.DataExtractorException;
 import tech.jmcs.floortech.scheduling.app.datasource.model.ExtractedTableData;
 import tech.jmcs.floortech.scheduling.app.util.XLSHelper;
@@ -25,11 +25,11 @@ import java.util.regex.Pattern;
 public class TrussListExtractor extends ExcelDataSourceExtractor<TrussData> {
     private static final Logger LOG = LoggerFactory.getLogger(TrussListExtractor.class);
 
-    protected static final String TRUSS_SCHEDULE_TITLE_PT1_260 = "CW260";
-    protected static final String TRUSS_SCHEDULE_TITLE_PT1_346 = "CW346";
+//    protected static final String TRUSS_SCHEDULE_TITLE_PT1_260 = "CW260";
+//    protected static final String TRUSS_SCHEDULE_TITLE_PT1_346 = "CW346";
     protected static final String TRUSS_SCHEDULE_TITLE_PT2 = " Joist Schedule";
-    protected static final String TRUSS_SCHEDULE_TITLE_260 = TRUSS_SCHEDULE_TITLE_PT1_260 + TRUSS_SCHEDULE_TITLE_PT2;
-    protected static final String TRUSS_SCHEDULE_TITLE_346 = TRUSS_SCHEDULE_TITLE_PT1_346 + TRUSS_SCHEDULE_TITLE_PT2;
+//    protected static final String TRUSS_SCHEDULE_TITLE_260 = TRUSS_SCHEDULE_TITLE_PT1_260 + TRUSS_SCHEDULE_TITLE_PT2;
+//    protected static final String TRUSS_SCHEDULE_TITLE_346 = TRUSS_SCHEDULE_TITLE_PT1_346 + TRUSS_SCHEDULE_TITLE_PT2;
     protected static final String COL_A_TITLE = "ID";
     protected static final String COL_B_TITLE = "No.";
     protected static final String COL_C_TITLE = "Truss Length";
@@ -69,10 +69,13 @@ public class TrussListExtractor extends ExcelDataSourceExtractor<TrussData> {
     }
 
     @Override
-    public Boolean isValid() {
+    public Boolean isValid() throws DataExtractorException {
         // check the truss listing xls layout and cell contents for expected layout
 
         Sheet firstSheet = this.getTargetSheet();
+        if (firstSheet == null) {
+            throw new DataExtractorException("The file may be in use!", "Truss List");
+        }
 
         DataFormatter dataFormatter = new DataFormatter();
 
@@ -83,7 +86,7 @@ public class TrussListExtractor extends ExcelDataSourceExtractor<TrussData> {
         for (Row row : firstSheet) {
             c += 1;
             if (c == 0) {
-                if (!firstRowOk(row)) errors.add("Row 1 (Title) was not as expected. (Expected 'CWxxx Joist Schedule'");
+                if (!firstRowOk(row)) errors.add("Row 1 (Title) was not as expected. (Expected 'CWxxx Joist Schedule')");
             } else if (c == 1) {
                 if (!secondRowOk(row)) errors.add("Row 2 (Column Headers) was not as expected.(Expected columns 'ID, 'No.', etc')");
             } else if (c == firstSheet.getLastRowNum()) {
@@ -107,11 +110,14 @@ public class TrussListExtractor extends ExcelDataSourceExtractor<TrussData> {
             if (!errors.isEmpty()) {
                 // TODO: Finish error collection to display to user
                 // For now just exit and report invalid file.
+                StringBuilder sb = new StringBuilder();
                 for (String error : errors) {
                     LOG.debug("Truss list extraction error: {}", error);
+                    sb.append(error);
+                    sb.append("\n");
                 }
 
-                return false;
+                throw new DataExtractorException(sb.toString(), "Truss List");
             }
         }
 
@@ -120,15 +126,18 @@ public class TrussListExtractor extends ExcelDataSourceExtractor<TrussData> {
 
     @Override
     public void extract() throws DataExtractorException {
-        if (!isValid()) {
-            LOG.warn("The Truss List XLS file was not valid.");
-            // throw exception
-            return;
+        if (!isValid()) { // throws exception
+            LOG.warn("The Truss List XLS file was not valid."); // will never be executed
+            return; // will never be executed
         }
 
-        ExtractedTableData<TrussData> data = new ExtractedTableData(DataSourceExtractorType.TRUSS.getName());
+        ExtractedTableData<TrussData> data = new ExtractedTableData(DataSourceExtractorType.TRUSS_COLDWRIGHT.getName());
 
         Sheet sheet = this.getTargetSheet();
+        if (sheet == null) {
+            throw new DataExtractorException("The file may be in use!", "Generic List");
+        }
+
         int c = -1;
         TrussData lastTrussData = null;
 
@@ -245,7 +254,7 @@ public class TrussListExtractor extends ExcelDataSourceExtractor<TrussData> {
             String colName = this.columnNames.get(n).toLowerCase().trim();
 
             if (cell.getCellType().equals(CellType.STRING)) {
-                String strVal = cell.getStringCellValue().toLowerCase().trim().replaceAll(" +", " ");
+                String strVal = cell.getStringCellValue().toLowerCase().trim().replaceAll("[\\s]+", " ");
 
                 if (!colName.equals(strVal)) {
                     LOG.debug("Expected column: {}, got: {}", colName, strVal);
@@ -270,17 +279,25 @@ public class TrussListExtractor extends ExcelDataSourceExtractor<TrussData> {
         if (cellA.getCellType().equals(CellType.STRING)) {
             String aLwr = cellA.getStringCellValue().toLowerCase();
 
-            if (aLwr.equals(TRUSS_SCHEDULE_TITLE_260.toLowerCase())
-                    || aLwr.equals(TRUSS_SCHEDULE_TITLE_346.toLowerCase())) {
-                LOG.debug("Truss list title matched expected Strings");
+            if (aLwr.contains("joist schedule") || aLwr.contains("truss list") || aLwr.contains("truss schedule") || aLwr.contains("joist list")) {
+                LOG.debug("Truss list title contained expected string");
                 return true;
             }
 
-            Pattern rx = Pattern.compile("([cC][wWxX])([a-zA-Z0-9]{3})([\\s]*)(Joist Schedule)", Pattern.CASE_INSENSITIVE);
+            Pattern rx = Pattern.compile("([ch][wx])([a-z0-9]{3})", Pattern.CASE_INSENSITIVE);
             Matcher m = rx.matcher(aLwr);
+            boolean tls = aLwr.contains("truss") || aLwr.contains("list") || aLwr.contains("schedule");
             if (m.find()) {
                 LOG.debug("Truss list title matched expected pattern");
-                return true;
+                if (tls) {
+                    return true;
+                }
+            }
+
+            if (aLwr.contains("hopley") || aLwr.contains("coldwright")) {
+                if (tls) {
+                    return true;
+                }
             }
 
             LOG.debug("Truss list title: {} did not match expectations", aLwr);
@@ -322,6 +339,10 @@ public class TrussListExtractor extends ExcelDataSourceExtractor<TrussData> {
 //        Cell i = XLSHelper.getCellByColumnIndex(row,8); // gap
         Cell j = XLSHelper.getCellByColumnIndex(row,9);
         Cell k = XLSHelper.getCellByColumnIndex(row,10);
+        Cell l = XLSHelper.getCellByColumnIndex(row, 11); // this may not exist.
+        if (l == null) {
+            LOG.debug("There is no Packing group column here");
+        }
 
         /**
          * Get Data from cells
@@ -332,17 +353,19 @@ public class TrussListExtractor extends ExcelDataSourceExtractor<TrussData> {
         String leftEc = dataFormatter.formatCellValue(e);
         String rightEc = dataFormatter.formatCellValue(f);
         String cutWebs = dataFormatter.formatCellValue(k);
+        String packGrp = "PACK 1";
+        if (l != null) {
+            packGrp = dataFormatter.formatCellValue(l);
+        }
 
         Long numberOf = 0l;
         if (b != null && b.getCellType().equals(CellType.NUMERIC)) {
-            long valB = (long) b.getNumericCellValue();
-            numberOf = valB;
+            numberOf = ((Double) b.getNumericCellValue()).longValue();
         }
 
         Long length = 0l;
         if (c != null && c.getCellType().equals(CellType.NUMERIC)) {
-            long valC = (long) c.getNumericCellValue();
-            length = valC;
+            length = ((Double)c.getNumericCellValue()).longValue();
         }
 
         Boolean hasPeno = false;
@@ -350,25 +373,36 @@ public class TrussListExtractor extends ExcelDataSourceExtractor<TrussData> {
             hasPeno = c.getBooleanCellValue();
         }
 
+
+
         /**
          * Convert Data
          */
 
-        Pattern ptnCutWeb = Pattern.compile("([0-9])[\\s]*[+][\\s]*([0-9])"); // matches pattern like 1+2 or 1 + 2
+        Integer packGrpInt = 1;
+        packGrp = packGrp.replace("PACK", "").trim();
+        try {
+            packGrpInt = Integer.parseInt(packGrp);
+        } catch (NumberFormatException nex) {
+        }
+
+        Pattern ptnCutWeb = Pattern.compile("([0-9]+)[\\s]*[+][\\s]*([0-9]+)"); // matches pattern like 1+2 or 1 + 2
         Matcher matcherCutWeb = ptnCutWeb.matcher(cutWebs);
         Integer cutWeb1 = 0;
         Integer cutWeb2 = 0;
         while (matcherCutWeb.find()) {
             try {
-                cutWeb1 = Integer.parseInt(matcherCutWeb.group(0));
-                cutWeb2 = Integer.parseInt(matcherCutWeb.group(1));
+                cutWeb1 = Integer.parseInt(matcherCutWeb.group(1));
+                cutWeb2 = Integer.parseInt(matcherCutWeb.group(2));
+                LOG.debug("Got web cuts at : {} + {}", cutWeb1, cutWeb2);
+                break;
             } catch (NumberFormatException nex) {
                 LOG.warn("Could not interpret webs to cut");
             }
         }
 
-        EndCapCW260 leftEndcap = EndCapCW260.fromName(leftEc);
-        EndCapCW260 rightEndcap = EndCapCW260.fromName(rightEc);
+        TrussEndCap leftEndcap = TrussEndCap.fromName(leftEc);
+        TrussEndCap rightEndcap = TrussEndCap.fromName(rightEc);
 
         /**
          * Set Data to Truss Data Object
@@ -378,11 +412,15 @@ public class TrussListExtractor extends ExcelDataSourceExtractor<TrussData> {
         trussData.setType(type);
         trussData.setLeftEndcap(leftEndcap);
         trussData.setRightEndcap(rightEndcap);
-        trussData.getPenetrationWebCuts().add(cutWeb1);
-        trussData.getPenetrationWebCuts().add(cutWeb2);
+        if (cutWeb1+cutWeb2 != 0) {
+            trussData.getPenetrationWebCuts().add(cutWeb1);
+            trussData.getPenetrationWebCuts().add(cutWeb2);
+            trussData.setHasAirconPenetration(true);
+        }
+        LOG.debug("Truss has {} web cuts", trussData.getPenetrationWebCuts().size());
         trussData.setQty(numberOf);
         trussData.setLength(length);
-        trussData.setHasAirconPenetration(hasPeno);
+        trussData.setPackingGroup(packGrpInt);
 
         return trussData;
     }

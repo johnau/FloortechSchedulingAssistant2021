@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import tech.jmcs.floortech.scheduling.app.exception.DataExtractorException;
 import tech.jmcs.floortech.scheduling.app.exception.GenericExcelDataException;
 import tech.jmcs.floortech.scheduling.app.datasource.model.ExtractedTableData;
+import tech.jmcs.floortech.scheduling.app.types.DataSourceExtractorType;
 import tech.jmcs.floortech.scheduling.app.util.ExcelCellAddress;
 import tech.jmcs.floortech.scheduling.app.util.ExcelHelper;
 import tech.jmcs.floortech.scheduling.app.util.XLSHelper;
@@ -97,14 +98,23 @@ public class GenericExcelHorizontalTableDataExtractor extends ExcelDataSourceExt
     }
 
     @Override
-    public Boolean isValid() {
+    public Boolean isValid() throws DataExtractorException {
         Sheet sheet = this.getTargetSheet();
+        if (sheet == null) {
+            throw new DataExtractorException("The file may be in use!", "Generic List");
+        }
+
         DataFormatter dataFormatter = new DataFormatter();
 
         List<String> errors = new ArrayList<>();
 
         /** Check is valid based on provided TableLayout */
         this.tableLayout.forEach( (cellAddress, expValue) -> {
+
+            if (cellAddress.getRow() < 0 || cellAddress.getCol() < 0) {
+                LOG.debug("Skipping this item due to negative out of bounds cell address");
+                return;
+            }
 
             if (expValue.equals(DATA_START)) {
                 /** data start value - skip processing */
@@ -146,10 +156,15 @@ public class GenericExcelHorizontalTableDataExtractor extends ExcelDataSourceExt
         }
 
         /** Check for errors and return false */
-        // TODO: Expose errors for user interface (method: getValidationErrors())
         if (!errors.isEmpty()) {
             LOG.warn("There were {} errors while validating this table with Generic Excel Extractor", errors.size());
-            return false;
+            StringBuilder sb = new StringBuilder();
+            for (String error : errors) {
+                sb.append(error);
+                sb.append("\n");
+            }
+            throw new DataExtractorException(sb.toString(), "Generic Source");
+
         }
 
         /** Return true if no errors */
@@ -188,7 +203,7 @@ public class GenericExcelHorizontalTableDataExtractor extends ExcelDataSourceExt
     }
 
     private ExtractedTableData<Map<String, Object>> processSheet(Sheet sheet, Integer startRow, Integer startCol, DataFormatter dataFormatter) {
-        ExtractedTableData<Map<String, Object>> tableData = new ExtractedTableData<>("Generic");
+        ExtractedTableData<Map<String, Object>> tableData = new ExtractedTableData<>(DataSourceExtractorType.GENERIC_SIMPLE.getName());
         boolean hasHeaderRows = false;
 
         String headerValue = "";
@@ -280,7 +295,7 @@ public class GenericExcelHorizontalTableDataExtractor extends ExcelDataSourceExt
             String colName = colDesc.getName();
 
             if (!this.validRowDataList.contains(colNum)) {
-                LOG.trace("Row Data Check: Not checking column: {} ({}) for data, not in validation list", colNum, colName);
+                LOG.debug("Row Data Check: Not checking column: {} ({}) for data, not in validation list", colNum, colName);
                 continue;
             }
 
@@ -303,8 +318,6 @@ public class GenericExcelHorizontalTableDataExtractor extends ExcelDataSourceExt
             }
         }
 
-        // TODO: Add customizable checks (Function) for validating a data row.
-        // eg. For Sheets, Checking ID contains "Z" will confirm a data row from a totals row.
         for (Function<Row, String> recordValidationFunction : recordValidationFunctions) {
             String error = recordValidationFunction.apply(row);
             if (error == null || error.isEmpty()) {
@@ -357,8 +370,8 @@ public class GenericExcelHorizontalTableDataExtractor extends ExcelDataSourceExt
 
     private String cleanStringForComparison(String s) {
         s = s.toLowerCase().trim(); // lowercase and trim
-        s.replaceAll(" +", " "); // remove excess spaces
-        s.replace(",", ""); // remove commas
+        s = s.replaceAll("[\\s]+", " "); // remove excess spaces
+        s = s.replace(",", ""); // remove commas
 
         return s;
     }

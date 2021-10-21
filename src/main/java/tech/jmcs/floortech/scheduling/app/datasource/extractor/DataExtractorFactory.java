@@ -37,6 +37,7 @@ public class DataExtractorFactory {
         }
     }
 
+    @Deprecated
     public static TrussListExtractor2 openExcelFileAsTrussList2(Path excelFile) {
         try {
             LOG.debug("Creating truss list 2 extractor for : {}", excelFile);

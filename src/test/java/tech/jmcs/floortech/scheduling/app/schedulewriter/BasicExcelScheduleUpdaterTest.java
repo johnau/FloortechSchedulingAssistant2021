@@ -14,7 +14,7 @@ import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class ExcelScheduleUpdaterImplTest {
+class BasicExcelScheduleUpdaterTest {
 
     @Test
     void testUpdateExcelSchedule() {
@@ -22,7 +22,7 @@ class ExcelScheduleUpdaterImplTest {
         String absolutePath = resourceDirectory.toFile().getAbsolutePath();
         Path scheduleFilePath = Paths.get(absolutePath, "1FLOORTECH-JOB TEMPLATE- 17-NOV-20.xls");
         try {
-            ExcelScheduleUpdaterImpl updater = new ExcelScheduleUpdaterImpl(scheduleFilePath);
+            BasicExcelScheduleUpdater updater = new BasicExcelScheduleUpdater(scheduleFilePath);
             updater.setTargetSheetNumber(0);
 
             Map<String, Object> dataMap = new HashMap<>();
@@ -40,6 +40,7 @@ class ExcelScheduleUpdaterImplTest {
             ExcelScheduleUpdateConfirmer confirmer = updater.updateSchedule(dataMap);
             if (confirmer == null) {
                 System.out.println("No issues during update");
+                return;
             } else {
                 System.out.println("Some issues during update");
             }

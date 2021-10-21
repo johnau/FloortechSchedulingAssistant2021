@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.VBox?>
 
 
-<VBox styleClass="small-padded" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tech.jmcs.floortech.scheduling.ui.datatarget.DataTargetPresenter">
+<VBox styleClass="small-padded" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tech.jmcs.floortech.scheduling.ui.datatarget.DataTargetPresenter">
    <children>
       <TitledPane text="Data Target">
          <content>

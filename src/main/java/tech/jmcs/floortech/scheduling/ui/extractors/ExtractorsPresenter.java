@@ -1,5 +1,6 @@
 package tech.jmcs.floortech.scheduling.ui.extractors;
 
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -7,11 +8,15 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tech.jmcs.floortech.scheduling.app.filesearch.FileWalkerNoChildren;
 import tech.jmcs.floortech.scheduling.app.settings.SettingsHolder;
 import tech.jmcs.floortech.scheduling.app.types.DataSourceExtractorType;
 import tech.jmcs.floortech.scheduling.app.util.PathUtilities;
+import tech.jmcs.floortech.scheduling.ui.AutoFillManagerFX;
+import tech.jmcs.floortech.scheduling.ui.DataExtractorDescriptorFX;
 import tech.jmcs.floortech.scheduling.ui.ExtractedDataHolderFX;
 import tech.jmcs.floortech.scheduling.ui.ExtractorComponentHolderFX;
 import tech.jmcs.floortech.scheduling.ui.settings.SettingsPresenter;
@@ -20,7 +25,10 @@ import tech.jmcs.floortech.scheduling.ui.settings.SettingsView;
 import javax.inject.Inject;
 import java.io.File;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -28,21 +36,33 @@ public class ExtractorsPresenter implements Initializable {
     protected static final Logger LOG = LoggerFactory.getLogger(ExtractorsPresenter.class);
 
     @Inject private SettingsHolder settingsHolder;
-    @Inject private ExtractedDataHolderFX extractedDataHolder;
-    @Inject private ExtractorComponentHolderFX extractorHolder;
+    @Inject private ExtractedDataHolderFX extractedDataHolderFX;
+    @Inject private ExtractorComponentHolderFX extractorComponentHolderFX;
     @Inject private SettingsView settingsView;
+    @Inject AutoFillManagerFX autoFillManagerFX;
 
     @FXML private TextField detailingFolderPathTextfield;
     @FXML private VBox dataSourceVbox; // where data source rows are added
 
     private Path lastJobDetailingFolderChooserPath;
 
+    private Consumer<Boolean> fillExtractors = aBoolean -> Platform.runLater(() -> autoFillExtractorsFromJobFolderLocation());
+    private Consumer<Boolean> clearExtractedData = aBoolean -> this.extractedDataHolderFX.clear();
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        LOG.debug("ExtractorsPresenter initializing...");
+        LOG.debug("ExtractorsPresenter initializing... (autoFillManager: {})", this.autoFillManagerFX.hashCode());
         setupBindingToSettings();
-        setupJobNumberListener();
+//        setupJobNumberListener();
         toggleBuiltInExtractors();
+
+        this.autoFillManagerFX.setClearExtractedData(this.clearExtractedData);
+        this.autoFillManagerFX.setAutoFillExtractors(this.fillExtractors);
+        this.autoFillManagerFX.setExtractorHolder(this.extractorComponentHolderFX);
+        this.autoFillManagerFX.setExtractorDataHolder(this.extractedDataHolderFX);
+//        this.autoFillManagerFX.setDetailingJobFolderPath(this.detailingFolderPathTextfield.textProperty());
+//        LOG.debug("Detailing Folder Path Text Field Hash Code: {}", this.detailingFolderPathTextfield.textProperty().hashCode());
+        this.detailingFolderPathTextfield.textProperty().bindBidirectional(this.autoFillManagerFX.getDetailingJobFolderPathProperty());
     }
 
     @FXML
@@ -71,6 +91,123 @@ public class ExtractorsPresenter implements Initializable {
         }
     }
 
+    @FXML
+    public void handleAutoFillAction(ActionEvent event) {
+        this.clearExtractedData.accept(true);
+        autoFillExtractorsFromJobFolderLocation();
+        LOG.debug("Detailing Folder Path Text Field hashcode {}", this.detailingFolderPathTextfield.textProperty().hashCode());
+    }
+
+    private void autoFillExtractorsFromJobFolderLocation() {
+        this.dataSourceVbox.getScene().getRoot().setDisable(true);// disable the entire scene
+        if (this.detailingFolderPathTextfield.getText().isEmpty()) {
+            informUser("No folder entered", "Enter a folder path into the field and try again");
+            return;
+        }
+        Path d = Paths.get(this.detailingFolderPathTextfield.getText());
+        if (!Files.exists(d, LinkOption.NOFOLLOW_LINKS) || !Files.isDirectory(d)) {
+            informUser("Folder does not exist", "The folder path entered in the field was not a valid directory/path. Please try another path and try again");
+            return;
+        }
+        // get all files in the folder (single level / no recurse)
+        List<Path> existingFiles = checkFolderForExistingFiles(d);
+        for (Path path : existingFiles) {
+            LOG.debug("File found in detailng folder: {}", path.toString());
+            String ext = FilenameUtils.getExtension(path.getFileName().toString());
+            if (ext.equalsIgnoreCase("xls") || ext.equalsIgnoreCase("xlsx")) {
+                String ucaseFileName = path.getFileName().toString().toUpperCase();
+                if (ucaseFileName.contains("BEAM") && ucaseFileName.contains("LIST")) {
+                    System.out.println("Found beam list: " + path.toString());
+                    Map.Entry<String, DataExtractorDescriptorFX> r = this.extractorComponentHolderFX.getActiveExtractors()
+                            .entrySet()
+                            .stream()
+                            .filter(f -> f.getKey().equalsIgnoreCase(DataSourceExtractorType.BEAM.getName()))
+                            .findFirst().orElse(null);
+                    if (r != null) {
+                        r.getValue().setFilePathText(path.toString());
+                    }
+                } else if (ucaseFileName.contains("SHEET") && ucaseFileName.contains("LIST")) {
+                    System.out.println("Found sheet list: " + path.toString());
+                    Map.Entry<String, DataExtractorDescriptorFX> r = this.extractorComponentHolderFX.getActiveExtractors()
+                            .entrySet()
+                            .stream()
+                            .filter(f -> f.getKey().equalsIgnoreCase(DataSourceExtractorType.SHEET.getName()))
+                            .findFirst().orElse(null);
+                    if (r != null) {
+                        r.getValue().setFilePathText(path.toString());
+                    }
+                } else if (ucaseFileName.contains("LIST") &&
+                        (ucaseFileName.contains("HOPLEY") || ucaseFileName.contains("HJ300") || ucaseFileName.contains("HJ200"))) {
+                    System.out.println("Found Hopley truss list: " + path.toString());
+                    Map.Entry<String, DataExtractorDescriptorFX> r = this.extractorComponentHolderFX.getActiveExtractors()
+                            .entrySet()
+                            .stream()
+                            .filter(f -> f.getKey().equalsIgnoreCase(DataSourceExtractorType.TRUSS_HOPLEY.getName()))
+                            .findFirst().orElse(null);
+                    if (r != null) {
+                        r.getValue().setFilePathText(path.toString());
+                    }
+                } else if (ucaseFileName.contains("LIST") &&
+                        (ucaseFileName.contains("COLDWRIGHT") || ucaseFileName.contains("CW260") || ucaseFileName.contains("CW346") || ucaseFileName.contains("CX346"))) {
+                    System.out.println("Found Coldwright truss list: " + path.toString());
+                    Map.Entry<String, DataExtractorDescriptorFX> r = this.extractorComponentHolderFX.getActiveExtractors()
+                            .entrySet()
+                            .stream()
+                            .filter(f -> f.getKey().equalsIgnoreCase(DataSourceExtractorType.TRUSS_COLDWRIGHT.getName()))
+                            .findFirst().orElse(null);
+                    if (r != null) {
+                        r.getValue().setFilePathText(path.toString());
+                    }
+                } else { // assume its the cw260/cw346 listing for now...
+                    System.out.println("Found (assumed) Coldwright truss list: " + path.toString());
+                    Map.Entry<String, DataExtractorDescriptorFX> r = this.extractorComponentHolderFX.getActiveExtractors()
+                            .entrySet()
+                            .stream()
+                            .filter(f -> f.getKey().equalsIgnoreCase(DataSourceExtractorType.TRUSS_COLDWRIGHT.getName()))
+                            .findFirst().orElse(null);
+                    if (r != null) {
+                        r.getValue().setFilePathText(path.toString());
+                    }
+                }
+            } else if (ext.equalsIgnoreCase("pdf")) {
+                System.out.println("Found Floortech job PDF: " + path.toString());
+                Path parentFolder = path.getParent().getFileName();
+                Path fileName = path.getFileName();
+                String fn = FilenameUtils.removeExtension(fileName.toString()).trim();
+                String pfn = parentFolder.toString().trim();
+                if (fn.equalsIgnoreCase(pfn)) {
+                    Map.Entry<String, DataExtractorDescriptorFX> r = this.extractorComponentHolderFX.getActiveExtractors()
+                            .entrySet()
+                            .stream()
+                            .filter(f -> f.getKey().equalsIgnoreCase(DataSourceExtractorType.SLAB.getName()))
+                            .findFirst().orElse(null);
+                    if (r != null) {
+                        r.getValue().setFilePathText(path.toString());
+                    }
+                }
+            }
+        }
+        this.dataSourceVbox.getScene().getRoot().setDisable(false); // enable the entire scene
+    }
+
+    private List<Path> checkFolderForExistingFiles(Path dirToCheck) {
+        if (dirToCheck == null) {
+            LOG.warn("Null path to check for existing files");
+            return null;
+        }
+
+        FileWalkerNoChildren filewalker = new FileWalkerNoChildren();
+        HashMap<String, List> res = filewalker.getFilesLimited(dirToCheck.toString(), Arrays.asList("*"));
+        List<Path> paths = res.get("paths");
+        if ( !paths.isEmpty() ) {
+            paths.forEach( (path) -> {
+                LOG.info("Processing existing .{} file in folder -- '{}' '{}'", Arrays.asList("*"), path.getFileName(), path);
+
+            });
+        }
+        return paths;
+    }
+
     /**
      * Private method to add a change listener to the SettingsHolder's lastUpdated property.
      * This allows this view to react to changes in settings.
@@ -94,47 +231,68 @@ public class ExtractorsPresenter implements Initializable {
         Boolean sheetExtractorEnabled = this.settingsHolder.isBuiltInSheetExtractorEnabled();
         Boolean slabExtractorEnabled = this.settingsHolder.isBuiltInSlabExtractorEnabled();
         Boolean trussExtractorEnabled = this.settingsHolder.isBuiltInTrussExtractorEnabled();
+        // use trussextractor enabled for both coldwright and hopley
 
-        VBox beamVbox = this.extractorHolder.getExtractorMap().get(DataSourceExtractorType.BEAM.getName()).getExtractorVbox();
-        VBox sheetVbox = this.extractorHolder.getExtractorMap().get(DataSourceExtractorType.SHEET.getName()).getExtractorVbox();
-        VBox slabVbox = this.extractorHolder.getExtractorMap().get(DataSourceExtractorType.SLAB.getName()).getExtractorVbox();
-        VBox trussVbox = this.extractorHolder.getExtractorMap().get(DataSourceExtractorType.TRUSS.getName()).getExtractorVbox();
+        VBox beamVbox = this.extractorComponentHolderFX.getExtractorMap().get(DataSourceExtractorType.BEAM.getName()).getExtractorVbox();
+        VBox sheetVbox = this.extractorComponentHolderFX.getExtractorMap().get(DataSourceExtractorType.SHEET.getName()).getExtractorVbox();
+        VBox slabVbox = this.extractorComponentHolderFX.getExtractorMap().get(DataSourceExtractorType.SLAB.getName()).getExtractorVbox();
+        VBox trussColdwrightVbox = this.extractorComponentHolderFX.getExtractorMap().get(DataSourceExtractorType.TRUSS_COLDWRIGHT.getName()).getExtractorVbox();
+        VBox trussHopleyVbox = this.extractorComponentHolderFX.getExtractorMap().get(DataSourceExtractorType.TRUSS_HOPLEY.getName()).getExtractorVbox();
 
         if (beamExtractorEnabled) {// add the extractor to the view if not present
             Optional<Node> existing = this.dataSourceVbox.getChildren().stream().filter(f -> f.equals(beamVbox)).findFirst();
             if (!existing.isPresent()) this.dataSourceVbox.getChildren().add(beamVbox);
-            this.extractorHolder.setExtractorEnabled(DataSourceExtractorType.BEAM.getName(), true);
+            this.extractorComponentHolderFX.setExtractorEnabled(DataSourceExtractorType.BEAM.getName(), true);
         } else { // remove the extractor from the view
             this.dataSourceVbox.getChildren().remove(beamVbox);
-            this.extractorHolder.setExtractorEnabled(DataSourceExtractorType.BEAM.getName(), false);
+            this.extractorComponentHolderFX.setExtractorEnabled(DataSourceExtractorType.BEAM.getName(), false);
         }
 
         if (sheetExtractorEnabled) {
             Optional<Node> existing = this.dataSourceVbox.getChildren().stream().filter(f -> f.equals(sheetVbox)).findFirst();
             if (!existing.isPresent()) this.dataSourceVbox.getChildren().add(sheetVbox);
-            this.extractorHolder.setExtractorEnabled(DataSourceExtractorType.SHEET.getName(), true);
+            this.extractorComponentHolderFX.setExtractorEnabled(DataSourceExtractorType.SHEET.getName(), true);
         } else {
             this.dataSourceVbox.getChildren().remove(sheetVbox);
-            this.extractorHolder.setExtractorEnabled(DataSourceExtractorType.SHEET.getName(), false);
+            this.extractorComponentHolderFX.setExtractorEnabled(DataSourceExtractorType.SHEET.getName(), false);
         }
 
         if (slabExtractorEnabled) {
             Optional<Node> existing = this.dataSourceVbox.getChildren().stream().filter(f -> f.equals(slabVbox)).findFirst();
             if (!existing.isPresent()) this.dataSourceVbox.getChildren().add(slabVbox);
-            this.extractorHolder.setExtractorEnabled(DataSourceExtractorType.SLAB.getName(), true);
+            this.extractorComponentHolderFX.setExtractorEnabled(DataSourceExtractorType.SLAB.getName(), true);
         } else {
             this.dataSourceVbox.getChildren().remove(slabVbox);
-            this.extractorHolder.setExtractorEnabled(DataSourceExtractorType.SLAB.getName(), false);
+            this.extractorComponentHolderFX.setExtractorEnabled(DataSourceExtractorType.SLAB.getName(), false);
         }
 
         if (trussExtractorEnabled) {
-            Optional<Node> existing = this.dataSourceVbox.getChildren().stream().filter(f -> f.equals(trussVbox)).findFirst();
-            if (!existing.isPresent()) this.dataSourceVbox.getChildren().add(trussVbox);
-            this.extractorHolder.setExtractorEnabled(DataSourceExtractorType.TRUSS.getName(), true);
+            Node ec = this.dataSourceVbox.getChildren().stream().filter(f -> f.equals(trussColdwrightVbox)).findFirst().orElse(null);
+            if (ec == null) {
+                this.dataSourceVbox.getChildren().add(trussColdwrightVbox);
+            }
+            this.extractorComponentHolderFX.setExtractorEnabled(DataSourceExtractorType.TRUSS_COLDWRIGHT.getName(), true);
+
+            Node eh = this.dataSourceVbox.getChildren().stream().filter(f -> f.equals(trussHopleyVbox)).findFirst().orElse(null);
+            if (eh == null) {
+                this.dataSourceVbox.getChildren().add(trussHopleyVbox);
+            }
+            this.extractorComponentHolderFX.setExtractorEnabled(DataSourceExtractorType.TRUSS_HOPLEY.getName(), true);
         } else {
-            this.dataSourceVbox.getChildren().remove(trussVbox);
-            this.extractorHolder.setExtractorEnabled(DataSourceExtractorType.TRUSS.getName(), false);
+            this.dataSourceVbox.getChildren().remove(trussColdwrightVbox);
+            this.extractorComponentHolderFX.setExtractorEnabled(DataSourceExtractorType.TRUSS_COLDWRIGHT.getName(), false);
+
+            this.dataSourceVbox.getChildren().remove(trussHopleyVbox);
+            this.extractorComponentHolderFX.setExtractorEnabled(DataSourceExtractorType.TRUSS_HOPLEY.getName(), false);
         }
+    }
+
+    private void informUser(String header, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(header);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 
     /**

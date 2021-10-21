@@ -19,7 +19,7 @@
             <URL value="@dataframe.css" />
          </stylesheets>
       </HBox>
-      <TabPane fx:id="mainTabPane" layoutY="50.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-background-color: #cc77cc;" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
+      <TabPane fx:id="mainTabPane" layoutY="50.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-background-color: #aaeecc;" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
         <tabs>
           <Tab text="Untitled Tab 1">
                <content>

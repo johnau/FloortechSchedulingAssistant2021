@@ -2,11 +2,13 @@ package tech.jmcs.floortech.scheduling.ui;
 
 import com.sun.xml.internal.ws.util.StringUtils;
 import javafx.geometry.Orientation;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import org.slf4j.Logger;
@@ -28,14 +30,15 @@ import java.util.stream.Collectors;
 public class ExtractorComponentHolderFX {
     protected static final Logger LOG = LoggerFactory.getLogger(ExtractorComponentHolderFX.class);
 
-    @Inject private SettingsHolder settingsHolder;
+    private SettingsHolder settingsHolder;
 
     private Map<String, DataExtractorDescriptorFX> dataExtractorMapFX;
 
     private Path lastPathChosen;
 
-    public ExtractorComponentHolderFX() {
-        LOG.info("ExtractorComponentHolderFX constructing...");
+    public ExtractorComponentHolderFX(SettingsHolder settingsHolder) {
+        LOG.info("ExtractorComponentHolderFX...");
+        this.settingsHolder = settingsHolder;
         this.dataExtractorMapFX = new HashMap<>();
     }
 
@@ -86,7 +89,8 @@ public class ExtractorComponentHolderFX {
         this.buildBuiltInExtractor(DataSourceExtractorType.BEAM);
         this.buildBuiltInExtractor(DataSourceExtractorType.SLAB);
         this.buildBuiltInExtractor(DataSourceExtractorType.SHEET);
-        this.buildBuiltInExtractor(DataSourceExtractorType.TRUSS);
+        this.buildBuiltInExtractor(DataSourceExtractorType.TRUSS_COLDWRIGHT);
+        this.buildBuiltInExtractor(DataSourceExtractorType.TRUSS_HOPLEY);
     }
 
     private void buildBuiltInExtractor(DataSourceExtractorType type) {
@@ -111,6 +115,7 @@ public class ExtractorComponentHolderFX {
         fieldLabel.getStyleClass().add("field-label");
 
         TextField pathField = new TextField();
+        HBox.setHgrow(pathField, Priority.ALWAYS);
         pathField.setPromptText("eg. C:\\..\\jobs\\19000\\" + FileType.fileTypesMap.get(type.getFileType()));
         pathField.getStyleClass().add("field");
 
@@ -128,11 +133,11 @@ public class ExtractorComponentHolderFX {
             }
 
 //          fileChooser.setInitialFileName(); // TODO: Generate expected filenames and set
-            FileChooser.ExtensionFilter extFilterXls = new FileChooser.ExtensionFilter(StringUtils.capitalize(type.getFileType()) + " Files", FileType.fileTypesMap.get(type.getFileType()));
+            FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter(StringUtils.capitalize(type.getFileType()) + " Files", FileType.fileTypesMap.get(type.getFileType()));
             FileChooser.ExtensionFilter extFilterAll = new FileChooser.ExtensionFilter("All Files", FileType.fileTypesMap.get("ALL"));
-            fileChooser.getExtensionFilters().add(extFilterXls);
+            fileChooser.getExtensionFilters().add(extFilter);
             fileChooser.getExtensionFilters().add(extFilterAll);
-            fileChooser.setSelectedExtensionFilter(extFilterXls);
+            fileChooser.setSelectedExtensionFilter(extFilter);
             fileChooser.setTitle(type.getName() + " | Choose Data File for Extractor...");
 
             File fileChosen = fileChooser.showOpenDialog(vbox.getScene().getWindow());
@@ -148,12 +153,33 @@ public class ExtractorComponentHolderFX {
         Separator separator = new Separator();
         separator.setOrientation(Orientation.HORIZONTAL);
 
-        vbox.getChildren().addAll(headerLabel, hbox, separator);
+        HBox fileNameContainer = new HBox();
+        HBox.setHgrow(fileNameContainer, Priority.ALWAYS);
+        HBox filler = new HBox();
+        filler.setPrefWidth(100D);
+        Label fileNameLabel = new Label("");
+        fileNameLabel.setAlignment(Pos.TOP_CENTER);
+        fileNameLabel.setStyle("-fx-font-weight: bold; -fx-text-fill: #0099ff;");
+        HBox.setHgrow(fileNameLabel, Priority.ALWAYS);
+        fileNameContainer.getChildren().addAll(filler, fileNameLabel);
+
+        pathField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.isEmpty()) {
+                fileNameLabel.setText("");
+                return;
+            }
+            Path p = Paths.get(newValue);
+            String cf = p.getFileName().toString();
+            fileNameLabel.setText(cf);
+        });
+
+        vbox.getChildren().addAll(headerLabel, hbox, fileNameContainer, separator);
 
         extractorDescriptor.setName(type.getName());
         extractorDescriptor.setType(type);
         extractorDescriptor.setExtractorVbox(vbox);
         extractorDescriptor.setFilePathTextProperty(pathField.textProperty());
+//        extractorDescriptor.setTextField(pathField);
         extractorDescriptor.setCustomExtractorDetails(null);
         extractorDescriptor.setEnabled(true);
 

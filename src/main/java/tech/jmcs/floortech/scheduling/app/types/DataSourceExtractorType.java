@@ -1,10 +1,11 @@
 package tech.jmcs.floortech.scheduling.app.types;
 
 public enum DataSourceExtractorType {
-    TRUSS ("Truss", "EXCEL"),
+    TRUSS_COLDWRIGHT("Truss - Coldwright", "EXCEL"),
     SLAB ("Slab", "PDF"),
     BEAM ("Beam", "EXCEL"),
     SHEET ("Sheet", "EXCEL"),
+    TRUSS_HOPLEY( "Truss - Hopley", "EXCEL"),
     GENERIC_SIMPLE ("Generic", "*");
 
     private final String name;

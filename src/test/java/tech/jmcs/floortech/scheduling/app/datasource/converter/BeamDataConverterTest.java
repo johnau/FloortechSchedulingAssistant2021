@@ -6,6 +6,7 @@ import tech.jmcs.floortech.scheduling.app.datasource.extractor.GenericExtractorC
 import tech.jmcs.floortech.scheduling.app.datasource.model.BeamData;
 import tech.jmcs.floortech.scheduling.app.datasource.model.ExtractedTableData;
 import tech.jmcs.floortech.scheduling.app.types.BeamTreatment;
+import tech.jmcs.floortech.scheduling.app.types.DataSourceExtractorType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +19,7 @@ class BeamDataConverterTest {
     void testConvert() {
         BeamDataConverter converter = new BeamDataConverter();
 
-        ExtractedTableData<BeamData> beamData = new ExtractedTableData<>("BEAM");
+        ExtractedTableData<BeamData> beamData = new ExtractedTableData<>(DataSourceExtractorType.BEAM.getName());
         Map<String, GenericExtractorColumnDataType> colTypes = new HashMap<>();
 
         colTypes.put("Beam Type", GenericExtractorColumnDataType.TEXT);

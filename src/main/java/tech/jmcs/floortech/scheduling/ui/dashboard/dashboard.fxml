@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import java.net.URL?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.SplitPane?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tech.jmcs.floortech.scheduling.ui.dashboard.DashboardPresenter">
+<AnchorPane prefHeight="1000.0" prefWidth="1600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tech.jmcs.floortech.scheduling.ui.dashboard.DashboardPresenter">
    <stylesheets>
       <URL value="@../global.css" />
       <URL value="@dashboard.css" />
@@ -21,7 +23,10 @@
                   <Label styleClass="main-header" text="Floortech Data Scraper | Scheduling" />
                </children>
             </HBox>
-            <HBox fx:id="toolbarHbox" alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS" />
+            <HBox fx:id="toolbarHbox" alignment="CENTER_RIGHT" spacing="5.0" HBox.hgrow="ALWAYS">
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding></HBox>
          </children>
       </HBox>
       <SplitPane dividerPositions="0.3" layoutY="50.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
@@ -42,16 +47,20 @@
                   </AnchorPane>
                </content>
             </ScrollPane>
-            <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="200.0">
-               <children>
-                  <ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <SplitPane dividerPositions="0.9" orientation="VERTICAL">
+               <items>
+                  <ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
                      <content>
                         <AnchorPane fx:id="rightPanelAnchorPane" />
                      </content>
                   </ScrollPane>
-                  <HBox maxWidth="1.7976931348623157E308" prefHeight="50.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
-               </children>
-            </AnchorPane>
+                  <HBox maxWidth="1.7976931348623157E308" prefHeight="50.0">
+                     <children>
+                        <ListView fx:id="loggingList" prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
+                     </children>
+                  </HBox>
+               </items>
+            </SplitPane>
          </items>
       </SplitPane>
    </children>

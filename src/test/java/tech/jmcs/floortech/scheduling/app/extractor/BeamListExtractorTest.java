@@ -31,7 +31,12 @@ class BeamListExtractorTest {
             return;
         }
 
-        Boolean valid = extractor.isValid();
+        Boolean valid = null;
+        try {
+            valid = extractor.isValid();
+        } catch (DataExtractorException e) {
+            e.printStackTrace();
+        }
         System.out.printf("File is valid: %s \n", valid.toString());
     }
 

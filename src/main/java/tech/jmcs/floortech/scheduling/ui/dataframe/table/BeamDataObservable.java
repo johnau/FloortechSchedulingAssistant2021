@@ -1,18 +1,17 @@
 package tech.jmcs.floortech.scheduling.ui.dataframe.table;
 
 import javafx.beans.property.*;
+import javafx.beans.value.ObservableLongValue;
+import javafx.beans.value.ObservableValue;
 import tech.jmcs.floortech.scheduling.app.types.BeamTreatment;
 
 public class BeamDataObservable {
     private StringProperty beamType = new SimpleStringProperty("", "beamType");
-
     private LongProperty quantity = new SimpleLongProperty(0L, "quantity");
-
     private StringProperty beamId = new SimpleStringProperty("", "beamId");
-
     private LongProperty length = new SimpleLongProperty(0L, "length");
-
-    private ObjectProperty<BeamTreatment> treatment = new SimpleObjectProperty<>(BeamTreatment.BLACK, "treatment");
+    private StringProperty treatment = new SimpleStringProperty(BeamTreatment.BLACK.toString(), "treatment");
+    private BooleanProperty treatmentLocked = new SimpleBooleanProperty(false, "treatmentLocked");
 
     public BeamDataObservable() {
     }
@@ -65,15 +64,27 @@ public class BeamDataObservable {
         this.length.set(length);
     }
 
-    public BeamTreatment getTreatment() {
+    public String getTreatment() {
         return treatment.get();
     }
 
-    public ObjectProperty<BeamTreatment> treatmentProperty() {
+    public StringProperty treatmentProperty() {
         return treatment;
     }
 
-    public void setTreatment(BeamTreatment treatment) {
+    public void setTreatment(String treatment) {
         this.treatment.set(treatment);
+    }
+
+    public boolean isTreatmentLocked() {
+        return treatmentLocked.get();
+    }
+
+    public BooleanProperty treatmentLockedProperty() {
+        return treatmentLocked;
+    }
+
+    public void setTreatmentLocked(boolean treatmentLocked) {
+        this.treatmentLocked.set(treatmentLocked);
     }
 }

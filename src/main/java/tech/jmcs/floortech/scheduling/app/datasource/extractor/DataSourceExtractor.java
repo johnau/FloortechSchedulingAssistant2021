@@ -12,7 +12,7 @@ public interface DataSourceExtractor<T> {
      * Method to check the data source is valid
      * @return
      */
-    public Boolean isValid();
+    public Boolean isValid() throws DataExtractorException;
 
     /**
      * Method to extract data from the data source into an ExtractedDataObject

@@ -26,55 +26,82 @@ import java.util.function.Function;
  *
  * Also handles the FX Components related to extraction
  *
+ * Data is extracted into the extractedDataHolder
+ *
  */
 public class ExtractorManagerFX {
     protected static final Logger LOG = LoggerFactory.getLogger(ExtractorManagerFX.class);
 
-    @Inject private ExtractorComponentHolderFX extractorHolder;
-    @Inject private ExtractedDataHolderFX extractedDataHolder;
+    @Inject private ExtractorComponentHolderFX extractorComponentHolderFX;
+    @Inject private ExtractedDataHolderFX extractedDataHolderFX;
 
     public ExtractorManagerFX() {
-        LOG.info("ExtractorManagerFX constructing...");
+
     }
 
-    public void processActiveExtractors() {
-        this.extractorHolder.getActiveExtractors().forEach( (name, descriptor) -> {
+    public void processActiveExtractors() throws DataExtractorException {
+        clearExtractedData();
+        for (Map.Entry<String, DataExtractorDescriptorFX> entry : this.extractorComponentHolderFX.getActiveExtractors().entrySet()) {
+            String name = entry.getKey();
+
+            DataExtractorDescriptorFX descriptor = entry.getValue();
             DataSourceExtractorType type = descriptor.getType();
             String name2 = descriptor.getName();
             String filePathText = descriptor.getFilePathText();
             if (type.equals(DataSourceExtractorType.BEAM)
                     || type.equals(DataSourceExtractorType.SHEET)
                     || type.equals(DataSourceExtractorType.SLAB)
-                    || type.equals(DataSourceExtractorType.TRUSS)) {
+                    || type.equals(DataSourceExtractorType.TRUSS_COLDWRIGHT)
+                    || type.equals(DataSourceExtractorType.TRUSS_HOPLEY)) {
                 boolean success = this.processBuiltInDataSourceExtraction(name2, type, filePathText);
                 if (success) {
                     LOG.debug("Successfully extracted: {}", name2);
                 } else {
                     LOG.warn("Failed to extract: {}", name2);
                 }
-            }
-            else if (type.equals(DataSourceExtractorType.GENERIC_SIMPLE)) {
+            } else if (type.equals(DataSourceExtractorType.GENERIC_SIMPLE)) {
                 // process generic simple data sources
+                LOG.debug("Processing of generic data sources not yet implemented");
             }
-        });
+        }
     }
 
-    private boolean processBuiltInDataSourceExtraction(String name, DataSourceExtractorType type, String filePath) {
+    public void clearExtractedData() {
+        if (this.extractedDataHolderFX != null) {
+            this.extractedDataHolderFX.clear();
+        }
+    }
+
+    private boolean processBuiltInDataSourceExtraction(String name, DataSourceExtractorType type, String filePath) throws DataExtractorException {
         switch (type) {
-            case BEAM: return beamExtract(name, type, filePath);
-            case SHEET: return sheetExtract(name, type, filePath);
-            case SLAB: return slabExtract(name, type, filePath);
-            case TRUSS: return trussExtract(name, type, filePath);
-            default: return false;
+            case BEAM:
+                return beamExtract(name, type, filePath);
+            case SHEET:
+                return sheetExtract(name, type, filePath);
+            case SLAB:
+                return slabExtract(name, type, filePath);
+            case TRUSS_COLDWRIGHT:
+            case TRUSS_HOPLEY:
+                return trussExtract(name, type, filePath);
+            default:
+                return false;
         }
     }
 
-    private boolean beamExtract(String name, DataSourceExtractorType type, String filePath) {
-        LOG.debug("Beam extractor: {} {} {}", name, type, filePath);
-        if (filePath == null || filePath.isEmpty()) {
+    private boolean isEmpty(String path, DataSourceExtractorType type) {
+        if (path == null || path.isEmpty()) {
             LOG.debug("No file to extract");
-            return false;
+            System.out.println(String.format("No '%s' %s data provided", type.getName(), type.getFileType()));
+            return true;
         }
+        System.out.println(String.format("Processing '%s' %s data...", type.getName(), type.getFileType()));
+        return false;
+    }
+
+    private boolean beamExtract(String name, DataSourceExtractorType type, String filePath) throws DataExtractorException {
+        LOG.debug("Beam extractor: {} {} {}", name, type, filePath);
+        if (isEmpty(filePath, type)) return false;
+
         Path excelFile = Paths.get(filePath);
         BeamListExtractor extractor = DataExtractorFactory.openExcelFileAsBeamList(excelFile);
         if (extractor == null) {
@@ -86,7 +113,10 @@ public class ExtractorManagerFX {
             extractor.extract();
         } catch (DataExtractorException e) {
             LOG.warn("Data Extractor Exception thrown: [%s] %s \n",  e.getDataSourceName(), e.getMessage());
-            return false;
+
+            System.out.println(String.format("Error! '%s' data extraction failed: '%s'", e.getDataSourceName(), e.getMessage()));
+
+            throw e;
         }
 
         ExtractedTableData<BeamData> data = extractor.getData();
@@ -96,21 +126,25 @@ public class ExtractorManagerFX {
         }
 
         Map<Long, BeamData> dataMap = data.getData();
-        this.extractedDataHolder.setBeamDataMap(dataMap);
+        this.extractedDataHolderFX.addBeamData(dataMap);
 
         LOG.info("Extracted Beam Data with Built In Beam Extractor");
+
+        System.out.println(String.format("Found %s Beam items", dataMap.size()));
 
         return true;
     }
 
-    private boolean sheetExtract(String name, DataSourceExtractorType type, String filePath) {
+    private boolean sheetExtract(String name, DataSourceExtractorType type, String filePath) throws DataExtractorException {
+        if (isEmpty(filePath, type)) return false;
+
         LOG.debug("Sheet extractor: {} {} {}", name, type, filePath);
-        if (filePath == null || filePath.isEmpty()) {
-            LOG.debug("No file to extract");
-            return false;
-        }
         Path excelPath = Paths.get(filePath);
         // using Generic Extractor for now
+
+        String lenColName = "Length";
+        String idColName = "ID";
+        String qtyColName = "Qty";
 
         /**
          * START of Setting up for use of Generic Extractor
@@ -118,13 +152,9 @@ public class ExtractorManagerFX {
         Map<ExcelCellAddress, String> tableLayout = new HashMap<>();
         tableLayout.put(new ExcelCellAddress(0, 2), ExcelDataSourceExtractor.DATA_START);
         tableLayout.put(new ExcelCellAddress(0, 0), "Sheets");
-        tableLayout.put(new ExcelCellAddress(0, 1), "Length");
-        tableLayout.put(new ExcelCellAddress(1, 1), "ID");
-        tableLayout.put(new ExcelCellAddress(2, 1), "Qty");
-
-        String lenColName = "Length";
-        String idColName = "ID";
-        String qtyColName = "Quantity";
+        tableLayout.put(new ExcelCellAddress(0, 1), lenColName);
+        tableLayout.put(new ExcelCellAddress(1, 1), idColName);
+        tableLayout.put(new ExcelCellAddress(2, 1), qtyColName);
 
         Map<Integer, GenericExtractorColumnDescription> columnMap = new HashMap<>();
         GenericExtractorColumnDescription lenCol = new GenericExtractorColumnDescription(lenColName, 0, GenericExtractorColumnDataType.NUMERIC);
@@ -155,12 +185,14 @@ public class ExtractorManagerFX {
          */
 
         GenericExcelHorizontalTableDataExtractor extractor = DataExtractorFactory.openExcelFileAsGenericList(excelPath, tableLayout, columnMap, validRowDataList, null, recordValidationFunctions);
-
+        if (extractor == null) {
+            LOG.warn("Could not create the extractor, did the file exist");
+            return false;
+        }
         try {
             extractor.extract();
         } catch (DataExtractorException e) {
-            System.out.printf("Extraction error: %s \n", e.getMessage());
-            return false;
+            throw e;
         }
 
         ExtractedTableData<Map<String, Object>> data = extractor.getData();
@@ -169,19 +201,19 @@ public class ExtractorManagerFX {
             return false;
         }
         Map<Long, Map<String, Object>> dataMap = data.getData();
-        this.extractedDataHolder.addCustomData("Sheet", dataMap); // custom data always stored as Map<Long, Map<String, Object>>...
+        this.extractedDataHolderFX.addCustomData("Sheet", dataMap); // custom data always stored as Map<Long, Map<String, Object>>...
 
         LOG.info("Extracted Sheet Data with Built In (Hardcoded Generic) Sheet Extractor");
+
+        System.out.println(String.format("Found %s Sheet items", dataMap.size()));
 
         return true;
     }
 
-    private boolean slabExtract(String name, DataSourceExtractorType type, String filePath) {
+    private boolean slabExtract(String name, DataSourceExtractorType type, String filePath) throws DataExtractorException {
+        if (isEmpty(filePath, type)) return false;
+
         LOG.debug("Slab extractor: {} {} {}", name, type, filePath);
-        if (filePath == null || filePath.isEmpty()) {
-            LOG.debug("No file to extract");
-            return false;
-        }
         Path pdfPath = Paths.get(filePath);
         SlabListExtractor extractor = DataExtractorFactory.openPdfAsSlabList(pdfPath);
         if (extractor == null) {
@@ -193,7 +225,7 @@ public class ExtractorManagerFX {
             extractor.extract();
         } catch (DataExtractorException e) {
             LOG.debug("Could not complete extraction of slab data");
-            return false;
+            throw e;
         }
 
         ExtractedTableData<SlabData> data = extractor.getData();
@@ -203,19 +235,20 @@ public class ExtractorManagerFX {
         }
 
         Map<Long, SlabData> dataMap = data.getData();
-        this.extractedDataHolder.setSlabDataMap(dataMap);
+        this.extractedDataHolderFX.addSlabData(dataMap);
 
         LOG.info("Extracted Slab Data with Built In Slab Extractor");
+
+        System.out.println(String.format("Found %s Slab items", dataMap.size()));
 
         return true;
     }
 
-    private boolean trussExtract(String name, DataSourceExtractorType type, String filePath) {
+    private boolean trussExtract(String name, DataSourceExtractorType type, String filePath) throws DataExtractorException {
+        if (isEmpty(filePath, type)) return false;
+
         LOG.debug("Truss extractor: {} {} {}", name, type, filePath);
-        if (filePath == null || filePath.isEmpty()) {
-            LOG.debug("No file to extract");
-            return false;
-        }
+
         Path excelFile = Paths.get(filePath);
         TrussListExtractor extractor = DataExtractorFactory.openExcelFileAsTrussList(excelFile);
         if (extractor == null) {
@@ -226,8 +259,7 @@ public class ExtractorManagerFX {
         try {
             extractor.extract();
         } catch (DataExtractorException e) {
-            LOG.debug("Could not extract Truss List Data from file: {}", filePath);
-            return false;
+            throw e;
         }
 
         ExtractedTableData<TrussData> data = extractor.getData();
@@ -237,9 +269,11 @@ public class ExtractorManagerFX {
         }
 
         Map<Long, TrussData> dataMap = data.getData();
-        this.extractedDataHolder.setTrussDataMap(dataMap);
+        this.extractedDataHolderFX.addTrussData(dataMap);
 
         LOG.info("Extracted Truss Data with Built In Truss Extractor");
+
+        System.out.println(String.format("Found %s Truss items", dataMap.size()));
 
         return true;
     }

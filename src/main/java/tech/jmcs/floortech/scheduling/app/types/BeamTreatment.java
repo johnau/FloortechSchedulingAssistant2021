@@ -2,19 +2,26 @@ package tech.jmcs.floortech.scheduling.app.types;
 
 public enum BeamTreatment {
 
-    BLACK ("Black"),
-    GALVANISED ("Galvanised"),
-    DIMET ("Dimet"),
-    EPOXY ("Epoxy"),
-    DURAGAL ("Duragal");
+    BLACK ("Black", 0),
+    GALVANISED ("Galvanised", 2),
+    DURAGALV("Duragalv", 4),
+    DIMET ("Dimet", 8),
+    EPOXY ("Epoxy", 16);
 
-    private String name;
 
-    BeamTreatment(String name) {
-        this.name = name;
+    private String nameForSchedule;
+    private int rank;
+
+    BeamTreatment(String nameForSchedule, int rank) {
+        this.nameForSchedule = nameForSchedule;
+        this.rank = rank;
     }
 
-    public String getName() {
-        return name;
+    public String getNameForSchedule() {
+        return nameForSchedule;
+    }
+
+    public int getRank() {
+        return rank;
     }
 }

@@ -5,12 +5,11 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-
-<VBox styleClass="small-padded" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tech.jmcs.floortech.scheduling.ui.extractbutton.ExtractButtonPresenter">
+<VBox styleClass="small-padded" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tech.jmcs.floortech.scheduling.ui.extractbutton.ExtractButtonPresenter">
    <children>
       <HBox alignment="CENTER" maxWidth="1.7976931348623157E308" prefHeight="50.0" styleClass="centered-row">
          <children>
-            <Button mnemonicParsing="false" onAction="#handleExtractDataButtonAction" styleClass="juicy-button" text="Extract Data" />
+            <Button fx:id="extractButton" mnemonicParsing="false" onAction="#handleExtractDataButtonAction" styleClass="juicy-button" text="Extract Data" />
          </children>
       </HBox>
    </children>

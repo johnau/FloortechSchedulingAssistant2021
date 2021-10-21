@@ -42,6 +42,8 @@ public class SettingsHolder {
 
     private String scheduleEntryCw260Truss;
     private String scheduleEntryCw346Truss;
+    private String scheduleEntryHj200TrussCount;
+    private String scheduleEntryHj300TrussCount;
     private String scheduleEntryHj200Truss;
     private String scheduleEntryHj300Truss;
     private String scheduleEntryStandardEndcapsCw260;
@@ -55,6 +57,8 @@ public class SettingsHolder {
     private String scheduleEntryTrussAirConPenoCw260;
     private String scheduleEntryTrussAirConPenoCw346;
     private String scheduleEntryTrussAirConPenoHj300;
+    private String scheduleEntryAdjustableEndcapsCw260;
+    private String scheduleEntryAdjustableEndcapsCw346;
 
     private String scheduleEntrySteelBlackKeyword;
     private String scheduleEntrySteelGalvanisedKeyword;
@@ -71,13 +75,15 @@ public class SettingsHolder {
     private String scheduleEntrySlabThickAngle;
     private String scheduleEntrySlabThinAngle;
 
+    private String scheduleEntrySheetSuffix;
+
     private List<String> dataSourceFileNamesMap;
 
     /**
      * Constructor
      */
     public SettingsHolder() {
-        LOG.debug("Settings Holder instantiated (Empty)");
+        LOG.info("SettingsHolder...");
         this.dataSourceFileNamesMap = new ArrayList<>();
         this.excelScheduleFileSections = new ArrayList<>();
     }
@@ -91,17 +97,17 @@ public class SettingsHolder {
      * @param builtInSlabExtractorEnabled
      * @param builtInTrussExtractorEnabled
      */
-    public void setAllSettings(Path jobFilesSchedulingRootPath, Path jobFoldersDetailingRootPath,
-                               Boolean builtInBeamExtractorEnabled,
-                               String beamScheduleSection,
-                               Boolean builtInSheetExtractorEnabled,
-                               String sheetScheduleSection,
-                               Boolean builtInSlabExtractorEnabled,
-                               String slabScheduleSection,
-                               Boolean builtInTrussExtractorEnabled,
-                               String trussScheduleSection,
-                               String scheduleSheetName,
-                               List<String> excelScheduleSections) {
+    public void setMainSettings(Path jobFilesSchedulingRootPath, Path jobFoldersDetailingRootPath,
+                                Boolean builtInBeamExtractorEnabled,
+                                String beamScheduleSection,
+                                Boolean builtInSheetExtractorEnabled,
+                                String sheetScheduleSection,
+                                Boolean builtInSlabExtractorEnabled,
+                                String slabScheduleSection,
+                                Boolean builtInTrussExtractorEnabled,
+                                String trussScheduleSection,
+                                String scheduleSheetName,
+                                List<String> excelScheduleSections) {
         try {
             this.setJobFilesSchedulingRootPath(jobFilesSchedulingRootPath);
         } catch (FileNotFoundException e) {
@@ -381,6 +387,28 @@ public class SettingsHolder {
             return;
         }
         this.scheduleEntryCw346Truss = scheduleEntryCw346Truss;
+    }
+
+    public String getScheduleEntryHj200TrussCount() {
+        return scheduleEntryHj200TrussCount;
+    }
+
+    public void setScheduleEntryHj200TrussCount(String scheduleEntryHj200TrussCount) {
+        if (scheduleEntryHj200TrussCount == null) {
+            return;
+        }
+        this.scheduleEntryHj200TrussCount = scheduleEntryHj200TrussCount;
+    }
+
+    public String getScheduleEntryHj300TrussCount() {
+        return scheduleEntryHj300TrussCount;
+    }
+
+    public void setScheduleEntryHj300TrussCount(String scheduleEntryHj300TrussCount) {
+        if (scheduleEntryHj300TrussCount == null) {
+            return;
+        }
+        this.scheduleEntryHj300TrussCount = scheduleEntryHj300TrussCount;
     }
 
     public String getScheduleEntryHj200Truss() {
@@ -667,5 +695,38 @@ public class SettingsHolder {
             return;
         }
         this.scheduleEntrySlabThinAngle = scheduleEntrySlabThinAngle;
+    }
+
+    public String getScheduleEntrySheetSuffix() {
+        return scheduleEntrySheetSuffix;
+    }
+
+    public void setScheduleEntrySheetSuffix(String scheduleEntrySheetSuffix) {
+        if (scheduleEntrySheetSuffix == null) {
+            return;
+        }
+        this.scheduleEntrySheetSuffix = scheduleEntrySheetSuffix;
+    }
+
+    public String getScheduleEntryAdjustableEndcapsCw260() {
+        return scheduleEntryAdjustableEndcapsCw260;
+    }
+
+    public void setScheduleEntryAdjustableEndcapsCw260(String scheduleEntryAdjustableEndcapsCw260) {
+        if (scheduleEntryAdjustableEndcapsCw260 == null) {
+            return;
+        }
+        this.scheduleEntryAdjustableEndcapsCw260 = scheduleEntryAdjustableEndcapsCw260;
+    }
+
+    public String getScheduleEntryAdjustableEndcapsCw346() {
+        return scheduleEntryAdjustableEndcapsCw346;
+    }
+
+    public void setScheduleEntryAdjustableEndcapsCw346(String scheduleEntryAdjustableEndcapsCw346) {
+        if (scheduleEntryAdjustableEndcapsCw346 == null) {
+            return;
+        }
+        this.scheduleEntryAdjustableEndcapsCw346 = scheduleEntryAdjustableEndcapsCw346;
     }
 }

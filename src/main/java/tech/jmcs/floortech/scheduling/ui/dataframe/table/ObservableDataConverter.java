@@ -12,7 +12,8 @@ public class ObservableDataConverter {
         bdo.setBeamType(beamData.getBeamType());
         bdo.setLength(beamData.getLength());
         bdo.setQuantity(beamData.getQuantity());
-        bdo.setTreatment(beamData.getTreatment());
+        bdo.setTreatment(beamData.getTreatment().toString());
+        bdo.setTreatmentLocked(beamData.isTreatmentLocked());
 
         return bdo;
     }

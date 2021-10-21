@@ -5,7 +5,6 @@
 .row-container {
     -fx-alignment: CENTER_LEFT;
     -fx-spacing: 2px;
-    -fx-max-width: 600px;
 }
 
 .field-label {

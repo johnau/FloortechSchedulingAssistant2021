@@ -2,6 +2,7 @@
 
 <?import java.lang.String?>
 <?import java.net.URL?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ChoiceBox?>
@@ -17,11 +18,19 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane fx:id="mainAnchorPane" prefHeight="1500.0" prefWidth="600.0" styleClass="main-container" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tech.jmcs.floortech.scheduling.ui.settings.SettingsPresenter">
+<AnchorPane fx:id="mainAnchorPane" prefHeight="900.0" prefWidth="600.0" styleClass="main-container" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tech.jmcs.floortech.scheduling.ui.settings.SettingsPresenter">
    <children>
       <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <Label styleClass="main-header" text="Scheduling Assistant Settings" />
+            <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="5.0" HBox.hgrow="ALWAYS">
+               <children>
+                  <Button mnemonicParsing="false" onAction="#handleRestoreDefaultSettings" text="Restore Default Settings" />
+               </children>
+               <padding>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </padding>
+            </HBox>
          </children>
       </HBox>
       <ScrollPane fitToHeight="true" fitToWidth="true" layoutY="47.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="353.0" prefWidth="600.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
@@ -43,7 +52,7 @@
                            <children>
                               <Label styleClass="setting-label" text="Job Folders (Detailing) Root" />
                               <TextField fx:id="detailingFoldersRootTextfield" styleClass="setting-field" />
-                              <Button mnemonicParsing="false" text="Change..." />
+                              <Button mnemonicParsing="false" onAction="#handleChooseJobFoldersPathAction" text="Change..." />
                            </children>
                            <styleClass>
                               <String fx:value="row-container" />
@@ -54,7 +63,7 @@
                            <children>
                               <Label styleClass="setting-label" text="Job Files (Scheduling) Root" />
                               <TextField fx:id="schedulingFolderRootTextfield" styleClass="setting-field" />
-                              <Button mnemonicParsing="false" text="Change..." />
+                              <Button mnemonicParsing="false" onAction="#handleChooseSchedulingFoldersPathAction" text="Change..." />
                            </children>
                            <styleClass>
                               <String fx:value="row-container" />
@@ -194,7 +203,7 @@
                                           <String fx:value="small-padded" />
                                        </styleClass>
                                     </HBox>
-                                    <TitledPane text="Truss Data Schedule Entries">
+                                    <TitledPane expanded="false" text="Truss Data Schedule Entries">
                                        <content>
                                           <VBox styleClass="small-padded">
                                              <children>
@@ -204,25 +213,31 @@
                                                       <HBox styleClass="row-container">
                                                          <children>
                                                             <Label styleClass="setting-label" text="CW260 Entry" />
-                                                            <TextField />
+                                                            <TextField fx:id="cw260EntryField" prefWidth="275.0" />
                                                          </children>
                                                       </HBox>
                                                       <HBox styleClass="row-container">
                                                          <children>
                                                             <Label styleClass="setting-label" text="Standard Endcap CW260 Entry" />
-                                                            <TextField />
+                                                            <TextField fx:id="stdEndCapCw260EntryField" prefWidth="275.0" />
                                                          </children>
                                                       </HBox>
                                                       <HBox styleClass="row-container">
                                                          <children>
                                                             <Label styleClass="setting-label" text="Connection Endcap CW260 Entry" />
-                                                            <TextField />
+                                                            <TextField fx:id="conEndCapCw260EntryField" prefWidth="275.0" />
                                                          </children>
                                                       </HBox>
                                                       <HBox styleClass="row-container">
                                                          <children>
                                                             <Label styleClass="setting-label" text="Air-Con Peno CW260 Entry" />
-                                                            <TextField />
+                                                            <TextField fx:id="acPenoCw260EntryField" prefWidth="275.0" />
+                                                         </children>
+                                                      </HBox>
+                                                      <HBox styleClass="row-container">
+                                                         <children>
+                                                            <Label styleClass="setting-label" text="Adjustable Endcap CW260 Entry" />
+                                                            <TextField fx:id="adjEndCapCw260EntryField" prefWidth="275.0" />
                                                          </children>
                                                       </HBox>
                                                    </children>
@@ -237,25 +252,31 @@
                                                       <HBox styleClass="row-container">
                                                          <children>
                                                             <Label styleClass="setting-label" text="CW346 Entry" />
-                                                            <TextField />
+                                                            <TextField fx:id="cw346EntryField" prefWidth="275.0" />
                                                          </children>
                                                       </HBox>
                                                       <HBox styleClass="row-container">
                                                          <children>
                                                             <Label styleClass="setting-label" text="Standard Endcap CW346 Entry" />
-                                                            <TextField />
+                                                            <TextField fx:id="stdEndCapCw346EntryField" prefWidth="275.0" />
                                                          </children>
                                                       </HBox>
                                                       <HBox styleClass="row-container">
                                                          <children>
                                                             <Label styleClass="setting-label" text="Connection Endcap CW346 Entry" />
-                                                            <TextField />
+                                                            <TextField fx:id="conEndCapCw346EntryField" prefWidth="275.0" />
                                                          </children>
                                                       </HBox>
                                                       <HBox styleClass="row-container">
                                                          <children>
                                                             <Label styleClass="setting-label" text="Air-Con Peno CW346 Entry" />
-                                                            <TextField />
+                                                            <TextField disable="true" />
+                                                         </children>
+                                                      </HBox>
+                                                      <HBox styleClass="row-container">
+                                                         <children>
+                                                            <Label styleClass="setting-label" text="Adjustable Endcap CW346 Entry" />
+                                                            <TextField fx:id="adjEndCapCw346EntryField" prefWidth="275.0" />
                                                          </children>
                                                       </HBox>
                                                    </children>
@@ -269,20 +290,32 @@
                                                    <children>
                                                       <HBox styleClass="row-container">
                                                          <children>
-                                                            <Label styleClass="setting-label" text="HJ200 Entry" />
-                                                            <TextField />
+                                                            <Label styleClass="setting-label" text="HJ200 Entry (Quantity)" />
+                                                            <TextField fx:id="hj200QuantityEntryField" prefWidth="275.0" />
+                                                         </children>
+                                                      </HBox>
+                                                      <HBox styleClass="row-container">
+                                                         <children>
+                                                            <Label styleClass="setting-label" text="HJ200 Entry (Linear Meters)" />
+                                                            <TextField fx:id="hj200EntryField" prefWidth="275.0" />
                                                          </children>
                                                       </HBox>
                                                       <HBox styleClass="row-container">
                                                          <children>
                                                             <Label styleClass="setting-label" text="Standard Endcap HJ200 Entry" />
-                                                            <TextField />
+                                                            <TextField fx:id="stdEndCapHj200EntryField" prefWidth="275.0" />
                                                          </children>
                                                       </HBox>
                                                       <HBox styleClass="row-container">
                                                          <children>
                                                             <Label styleClass="setting-label" text="Connection Endcap HJ200 Entry" />
-                                                            <TextField />
+                                                            <TextField fx:id="conEndCapHj200EntryField" prefWidth="275.0" />
+                                                         </children>
+                                                      </HBox>
+                                                      <HBox styleClass="row-container">
+                                                         <children>
+                                                            <Label styleClass="setting-label" text="Adjustable Endcap HJ200 Entry" />
+                                                            <TextField fx:id="adjEndCapHj200EntryField" disable="true" editable="false" prefWidth="275.0" />
                                                          </children>
                                                       </HBox>
                                                    </children>
@@ -296,26 +329,38 @@
                                                    <children>
                                                       <HBox styleClass="row-container">
                                                          <children>
-                                                            <Label styleClass="setting-label" text="HJ300 Entry" />
-                                                            <TextField />
+                                                            <Label styleClass="setting-label" text="HJ300 Entry (Quantity)" />
+                                                            <TextField fx:id="hj300QuantityEntryField" prefWidth="275.0" />
+                                                         </children>
+                                                      </HBox>
+                                                      <HBox styleClass="row-container">
+                                                         <children>
+                                                            <Label styleClass="setting-label" text="HJ300 Entry (Linear Meter)" />
+                                                            <TextField fx:id="hj300EntryField" prefWidth="275.0" />
                                                          </children>
                                                       </HBox>
                                                       <HBox styleClass="row-container">
                                                          <children>
                                                             <Label styleClass="setting-label" text="Standard Endcap HJ300 Entry" />
-                                                            <TextField />
+                                                            <TextField fx:id="stdEndCapHj300EntryField" prefWidth="275.0" />
                                                          </children>
                                                       </HBox>
                                                       <HBox styleClass="row-container">
                                                          <children>
                                                             <Label styleClass="setting-label" text="Connection Endcap HJ300 Entry" />
-                                                            <TextField />
+                                                            <TextField fx:id="conEndCapHj300EntryField" prefWidth="275.0" />
                                                          </children>
                                                       </HBox>
                                                       <HBox styleClass="row-container">
                                                          <children>
                                                             <Label styleClass="setting-label" text="Air-Con Peno HJ300 Entry" textFill="#aaaaaa" />
-                                                            <TextField disable="true" />
+                                                            <TextField disable="true" prefWidth="275.0" />
+                                                         </children>
+                                                      </HBox>
+                                                      <HBox styleClass="row-container">
+                                                         <children>
+                                                            <Label styleClass="setting-label" text="Adjusable Endcap HJ300 Entry" />
+                                                            <TextField fx:id="adjEndCapHj300EntryField" disable="true" editable="false" prefWidth="275.0" />
                                                          </children>
                                                       </HBox>
                                                    </children>
@@ -375,32 +420,32 @@
                                           <String fx:value="small-padded" />
                                        </styleClass>
                                     </HBox>
-                                    <TitledPane text="Beam Data Schedule Entries">
+                                    <TitledPane expanded="false" text="Beam Data Schedule Entries">
                                        <content>
                                           <VBox styleClass="small-padded">
                                              <children>
                                                 <HBox styleClass="row-container">
                                                    <children>
                                                       <Label styleClass="setting-label" text="Black Keyword" />
-                                                      <TextField />
+                                                      <TextField fx:id="blackKeywordField" />
                                                    </children>
                                                 </HBox>
                                                 <HBox styleClass="row-container">
                                                    <children>
                                                       <Label styleClass="setting-label" text="Galvanized keyword" />
-                                                      <TextField />
+                                                      <TextField fx:id="galvKeywordField" />
                                                    </children>
                                                 </HBox>
                                                 <HBox styleClass="row-container">
                                                    <children>
                                                       <Label styleClass="setting-label" text="Dimet Keyword" />
-                                                      <TextField />
+                                                      <TextField fx:id="dimetKeywordField" />
                                                    </children>
                                                 </HBox>
                                                 <HBox styleClass="row-container">
                                                    <children>
                                                       <Label styleClass="setting-label" text="Epoxy Keyword" />
-                                                      <TextField />
+                                                      <TextField fx:id="epoxyKeywordField" />
                                                    </children>
                                                 </HBox>
                                                 <HBox styleClass="row-container">
@@ -461,49 +506,49 @@
                                                 <HBox styleClass="row-container">
                                                    <children>
                                                       <Label styleClass="setting-label" text="Internal 83mm Slab Entry" />
-                                                      <TextField />
+                                                      <TextField fx:id="int83mmSlabEntryField" prefWidth="275.0" />
                                                    </children>
                                                 </HBox>
                                                 <HBox styleClass="row-container">
                                                    <children>
                                                       <Label styleClass="setting-label" text="Balcony 2c RHS Entry" />
-                                                      <TextField />
+                                                      <TextField fx:id="balc2cRhsSlabEntryField" prefWidth="275.0" />
                                                    </children>
                                                 </HBox>
                                                 <HBox styleClass="row-container">
                                                    <children>
                                                       <Label styleClass="setting-label" text="Balcony 3c RHS Entry" />
-                                                      <TextField />
+                                                      <TextField fx:id="balc3cRhsSlabEntryField" prefWidth="275.0" />
                                                    </children>
                                                 </HBox>
                                                 <HBox styleClass="row-container">
                                                    <children>
                                                       <Label styleClass="setting-label" text="Balcony 2c INSITU Entry" />
-                                                      <TextField />
+                                                      <TextField fx:id="balc2cInsituSlabEntryField" prefWidth="275.0" />
                                                    </children>
                                                 </HBox>
                                                 <HBox styleClass="row-container">
                                                    <children>
                                                       <Label styleClass="setting-label" text="Balcony 3c INSITU Entry" />
-                                                      <TextField />
+                                                      <TextField fx:id="balc3cInsituSlabEntryField" prefWidth="275.0" />
                                                    </children>
                                                 </HBox>
                                                 <HBox styleClass="row-container">
                                                    <children>
                                                       <Label styleClass="setting-label" text="Balcony 4c INSITU Entry" />
-                                                      <TextField />
+                                                      <TextField fx:id="balc4cInsituSlabEntryField" prefWidth="275.0" />
                                                    </children>
                                                 </HBox>
                                                 <HBox styleClass="row-container">
                                                    <children>
                                                       <Label styleClass="setting-label" text="Thick Angle Entry" />
-                                                      <TextField />
+                                                      <TextField fx:id="thickAngleEntryField" prefWidth="275.0" />
                                                    </children>
                                                 </HBox>
                                                 <HBox styleClass="row-container">
                                                    <children>
                                                       <Label styleClass="setting-label" text="Thin Angle Entry" />
-                                                      <TextField />
+                                                      <TextField fx:id="thinAngleEntryField" prefWidth="275.0" />
                                                    </children>
                                                 </HBox>
                                                 <HBox styleClass="row-container">
@@ -563,8 +608,8 @@
                                              <children>
                                                 <HBox styleClass="row-container">
                                                    <children>
-                                                      <Label styleClass="setting-label" text="Sheet Length Keyword" />
-                                                      <TextField />
+                                                      <Label styleClass="setting-label" text="Sheet Keyword" />
+                                                      <TextField fx:id="sheetKeywordField" prefWidth="275.0" />
                                                    </children>
                                                 </HBox>
                                                 <HBox styleClass="row-container">

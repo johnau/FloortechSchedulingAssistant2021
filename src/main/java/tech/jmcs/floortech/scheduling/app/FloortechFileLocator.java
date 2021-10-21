@@ -6,9 +6,6 @@ import javax.inject.Inject;
 
 public class FloortechFileLocator {
 
-    @Inject
-    private SettingsHolder settingsHolder;
-
     public FloortechFileLocator() {
     }
 
