@@ -44,6 +44,7 @@ public class RequiredRecordDataPresenter implements Initializable, TriggeredFXML
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        LOG.debug("Custom extractor data: {}", customExtractorData);
         populateCheckboxes();
     }
 

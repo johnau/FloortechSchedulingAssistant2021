@@ -7,7 +7,7 @@
 
 <HBox spacing="5.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tech.jmcs.floortech.scheduling.ui.settingsbutton.SettingsButtonPresenter">
    <children>
-      <Button mnemonicParsing="false" onAction="#handleCustomExtractorsButtonAction" text="Custom Extractors" />
+      <Button disable="true" mnemonicParsing="false" onAction="#handleCustomExtractorsButtonAction" text="Custom Extractors" visible="false" />
       <Button fx:id="settingsButton" mnemonicParsing="false" onAction="#handleSettingsButtonAction" text="Settings">
          <graphic>
             <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">

@@ -9,7 +9,6 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
 <AnchorPane prefHeight="500.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tech.jmcs.floortech.scheduling.ui.customextractorwizard.datasourcepage.DataSourcePresenter">
    <children>
       <VBox alignment="TOP_CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -28,8 +27,8 @@
                               <Font name="System Bold" size="12.0" />
                            </font>
                         </Label>
-                        <ChoiceBox prefWidth="150.0" />
-                        <TextField fx:id="tableTitle" promptText="Enter filename pattern..." />
+                        <ChoiceBox fx:id="stringPosChoice" prefWidth="150.0" />
+                        <TextField fx:id="fileNamePatternField" promptText="Enter filename pattern..." />
                      </children>
                   </HBox>
                   <Label text="(Allows auto detection of the data file)" />

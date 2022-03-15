@@ -3,6 +3,7 @@ package tech.jmcs.floortech.scheduling.ui.customextractorwizard;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CustomExtractor {
@@ -23,6 +24,7 @@ public class CustomExtractor {
 
 
     public CustomExtractor() {
+        this.columnDescriptors = new ArrayList<>();
         this.columnDescriptorsObservable = FXCollections.observableArrayList();
 
         this.tableTitleRow = 1;
@@ -75,7 +77,8 @@ public class CustomExtractor {
     }
 
     public void setColumnDescriptors(List<ColumnValidationData> columnDescriptors) {
-        this.columnDescriptors = columnDescriptors;
+        this.columnDescriptors.clear();
+        this.columnDescriptors.addAll(columnDescriptors);
         this.columnDescriptorsObservable.clear();
         this.columnDescriptorsObservable.addAll(columnDescriptors);
     }
