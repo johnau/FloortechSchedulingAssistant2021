@@ -12,10 +12,7 @@ import tech.jmcs.floortech.scheduling.app.util.XLSHelper;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,7 +37,7 @@ public class TrussListExtractor extends ExcelDataSourceExtractor<TrussData> {
     protected static final String COL_H_TITLE = "STDs";
     protected static final String COL_I_TITLE = "";
     protected static final String COL_J_TITLE = "p.HAS PENO";
-    protected static final String COL_K_TITLE = "p.CUT WEBS (count from: Left End Cap)";
+    protected static final String COL_K_TITLE = "p.CUT WEBS";
 
     protected static final int TRUSS_DATA_ROW = 0;
     protected static final int TRUSS_TOTALS_ROW = 1;
@@ -86,9 +83,9 @@ public class TrussListExtractor extends ExcelDataSourceExtractor<TrussData> {
         for (Row row : firstSheet) {
             c += 1;
             if (c == 0) {
-                if (!firstRowOk(row)) errors.add("Row 1 (Title) was not as expected. (Expected 'CWxxx Joist Schedule')");
+                if (!firstRowOk(row)) errors.add("Row 1 (Title) was not as expected. (Expected 'Joist Schedule/Joist List/Truss List' to be in the table title)");
             } else if (c == 1) {
-                if (!secondRowOk(row)) errors.add("Row 2 (Column Headers) was not as expected.(Expected columns 'ID, 'No.', etc')");
+                if (!secondRowOk(row)) errors.add("Row 2 (Column Headers) was not as expected.(Expected columns " + Arrays.toString(this.columnNames.values().toArray()) + ", etc). Please ensure tables columns are correct.");
             } else if (c == firstSheet.getLastRowNum()) {
                 if (!lastRowOk(row)) errors.add("Last row (Grand Total) was not as expected. (Expected grand total row)");
             } else {
@@ -108,8 +105,6 @@ public class TrussListExtractor extends ExcelDataSourceExtractor<TrussData> {
             }
 
             if (!errors.isEmpty()) {
-                // TODO: Finish error collection to display to user
-                // For now just exit and report invalid file.
                 StringBuilder sb = new StringBuilder();
                 for (String error : errors) {
                     LOG.debug("Truss list extraction error: {}", error);
@@ -253,10 +248,11 @@ public class TrussListExtractor extends ExcelDataSourceExtractor<TrussData> {
             }
             String colName = this.columnNames.get(n).toLowerCase().trim();
 
+
             if (cell.getCellType().equals(CellType.STRING)) {
                 String strVal = cell.getStringCellValue().toLowerCase().trim().replaceAll("[\\s]+", " ");
 
-                if (!colName.equals(strVal)) {
+                if (!strVal.startsWith(colName)) {
                     LOG.debug("Expected column: {}, got: {}", colName, strVal);
                     return false;
                 }

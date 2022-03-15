@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="500.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tech.jmcs.floortech.scheduling.ui.customextractorwizard.requiredrecorddata.RequiredRecordDataPresenter">
+   <children>
+      <VBox alignment="TOP_CENTER" layoutY="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <Label text="Required Record Data">
+               <font>
+                  <Font size="24.0" />
+               </font>
+            </Label>
+            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0" VBox.vgrow="ALWAYS">
+               <children>
+                  <Separator prefWidth="200.0" />
+                  <HBox alignment="CENTER" spacing="10.0" />
+                  <Label text="(Choose columns that must be present for a valid record)" />
+                  <Label text="Select columns that must have data present for a valid record:">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </Label>
+                  <FlowPane fx:id="checkboxFlowpane" alignment="CENTER" hgap="10.0" prefHeight="59.0" prefWidth="800.0" vgap="10.0" />
+                  <Label prefHeight="55.0" prefWidth="300.0" text="Some tables contain total or subtotal rows.  To ensure records are read correctly, choose the columns that are required for a valid record.  " wrapText="true" />
+                  <Label prefHeight="22.0" prefWidth="300.0" text="Please note:" wrapText="true">
+                     <font>
+                        <Font name="System Italic" size="12.0" />
+                     </font>
+                  </Label>
+                  <Label prefHeight="75.0" prefWidth="300.0" text="Tables should be formatted so that total rows do not include totals for every column, this will lower the certainty of record validation, as total rows will look similiar to records/entries" wrapText="true" />
+               </children>
+            </VBox>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>

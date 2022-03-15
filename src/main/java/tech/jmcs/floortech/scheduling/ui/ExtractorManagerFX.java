@@ -165,7 +165,7 @@ public class ExtractorManagerFX {
         columnMap.put(1, idCol);
         columnMap.put(2, qtyCol);
 
-        List<Integer> validRowDataList = Arrays.asList(1, 2);
+        List<Integer> validRowDataList = Arrays.asList(0, 1, 2);
 
         List<Function<Row, String>> recordValidationFunctions = new ArrayList();
         Function<Row, String> recordValidator = (row) -> {

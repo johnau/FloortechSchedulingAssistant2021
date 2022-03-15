@@ -95,7 +95,6 @@ public class DashboardPresenter implements Initializable {
                 });
                 super.println(s);
             }
-            // override some other methods?
         });
         loggingList.getItems().addListener(new ListChangeListener<String>() {
             @Override

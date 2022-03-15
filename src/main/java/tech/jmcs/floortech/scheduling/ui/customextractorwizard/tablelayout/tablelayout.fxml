@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="500.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="tech.jmcs.floortech.scheduling.ui.customextractorwizard.tablelayout.TableLayoutPresenter">
+   <children>
+      <VBox alignment="TOP_CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <Label text="Table Layout">
+               <font>
+                  <Font size="24.0" />
+               </font>
+            </Label>
+            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0" VBox.vgrow="ALWAYS">
+               <children>
+                  <HBox alignment="CENTER" prefHeight="20.0" prefWidth="200.0" spacing="10.0">
+                     <children>
+                        <Label text="Table Title">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="tableTitle" promptText="Enter Table Title..." />
+                        <Separator orientation="VERTICAL" prefHeight="200.0" />
+                        <Label text="Row" />
+                        <TextField fx:id="tableTitleRow" maxWidth="50.0" text="1" />
+                     </children>
+                  </HBox>
+                  <Label text="(Case insensitive)" />
+                  <HBox alignment="CENTER" prefHeight="20.0" prefWidth="200.0" spacing="10.0">
+                     <children>
+                        <Label text="Column Headers">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                        </Label>
+                        <Separator orientation="VERTICAL" prefHeight="200.0" />
+                        <Label text="Row" />
+                        <TextField fx:id="columnHeadersRow" maxWidth="50.0" text="2" />
+                     </children>
+                  </HBox>
+                  <Label text="(Column titles/labels)" />
+                  <HBox alignment="CENTER" prefHeight="20.0" prefWidth="200.0" spacing="10.0">
+                     <children>
+                        <Label text="First Data Row">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                        </Label>
+                        <Separator orientation="VERTICAL" prefHeight="200.0" />
+                        <Label text="Row" />
+                        <TextField fx:id="firstDataRow" maxWidth="50.0" text="3" />
+                     </children>
+                  </HBox>
+                  <Label text="(First row of table data)" />
+               </children>
+            </VBox>
+         </children>
+         <padding>
+            <Insets top="10.0" />
+         </padding>
+      </VBox>
+   </children>
+</AnchorPane>

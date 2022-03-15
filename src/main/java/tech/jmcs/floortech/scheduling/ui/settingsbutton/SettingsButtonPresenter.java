@@ -17,6 +17,9 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tech.jmcs.floortech.scheduling.ui.customextractor.CustomExtractorView;
+import tech.jmcs.floortech.scheduling.ui.customextractorwizard.CustomExtractorWizardPresenter;
+import tech.jmcs.floortech.scheduling.ui.customextractorwizard.CustomExtractorWizardView;
 import tech.jmcs.floortech.scheduling.ui.settings.SettingsPresenter;
 import tech.jmcs.floortech.scheduling.ui.settings.SettingsView;
 
@@ -28,11 +31,14 @@ public class SettingsButtonPresenter implements Initializable {
     protected static final Logger LOG = LoggerFactory.getLogger(SettingsButtonPresenter.class);
 
     @Inject private SettingsView settingsView;
+    @Inject private CustomExtractorView customExtractorView;
+    @Inject private CustomExtractorWizardView customExtractorWizardView;
 
     @FXML private Button settingsButton;
 
     private Scene settingsScene;
     private Scene helpScene;
+    private Scene customExtractorScene;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -56,6 +62,23 @@ public class SettingsButtonPresenter implements Initializable {
         settingsStage.setResizable(true);
         settingsStage.show();
     }
+
+
+    @FXML
+    public void handleCustomExtractorsButtonAction(ActionEvent event) {
+        Stage customExtractStage = new Stage();
+        if (this.customExtractorScene == null) {
+            this.customExtractorScene = new Scene(this.customExtractorWizardView.getView());
+        }
+        customExtractStage.setScene(this.customExtractorScene);
+        customExtractStage.initModality(Modality.APPLICATION_MODAL);
+        customExtractStage.setTitle("Custom Extractor Wizard");
+        customExtractStage.setWidth(800);
+        customExtractStage.setHeight(600);
+        customExtractStage.setResizable(false);
+        customExtractStage.show();
+    }
+
 
     @FXML
     public void handleHelpButtonAction(ActionEvent event) {

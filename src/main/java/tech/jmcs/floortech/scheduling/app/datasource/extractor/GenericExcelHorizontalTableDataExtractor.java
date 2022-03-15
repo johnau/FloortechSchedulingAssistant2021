@@ -301,17 +301,21 @@ public class GenericExcelHorizontalTableDataExtractor extends ExcelDataSourceExt
 
             Object value = rowData.get(colName);
 
-            if (value.getClass().equals(Double.class)) {
+            if (value instanceof Double) {
                 Double d = (Double) value;
                 if (d == null || d.isNaN() || d.isInfinite()) { // TODO: Take another look at this check against invalid Double values.
                     LOG.debug("Row Data Check Fail: Value was empty for: {}", colName);
                     return false;
+                } else {
+                    LOG.debug("Row data Check pass for col: '{}' (value: '{}')", colName, d);
                 }
-            } else if (value.getClass().equals(String.class)) {
+            } else if (value instanceof String) {
                 String s = (String) value;
                 if (s.isEmpty()) {
                     LOG.debug("Row Data Check Fail: Value was empty for: {}", colName);
                     return false;
+                } else {
+                    LOG.debug("Row data Check pass for col: '{}' (value: '{}')", colName, s);
                 }
             } else {
                 LOG.debug("Unexpected data type: {}", value.getClass().getName());
